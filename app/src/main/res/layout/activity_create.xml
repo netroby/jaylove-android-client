@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/activity_create"
     android:layout_width="match_parent"
@@ -8,6 +8,42 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="com.netroby.daylove.android.daylove.CreateActivity">
+    android:orientation="vertical"
+    tools:context="com.netroby.daylove.android.daylove.CreateActivity"
+    android:baselineAligned="false">
 
-</RelativeLayout>
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:text="Type some text then press"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/textView"
+            android:layout_weight="1"
+            android:gravity="left|center"
+            android:layout_gravity="left|center_vertical|center_horizontal" />
+
+        <Button
+            android:text="@string/create_submit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/button"
+            android:layout_weight="1"
+            android:layout_gravity="right|center_vertical|center_horizontal" />
+    </LinearLayout>
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight=".9"
+        android:inputType="textMultiLine"
+        android:ems="10"
+        android:id="@+id/editText"
+        android:hint="type some thing"
+        android:textAlignment="viewStart"
+        android:gravity="top" />
+
+</LinearLayout>
