@@ -14,12 +14,11 @@ import com.netroby.daylove.android.daylove.common.Token;
 
 public class MainActivity extends AppCompatActivity {
 
+    public static String token = "";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
 
         //Check if token exists
         Token tk = new Token(getApplicationContext());
@@ -27,7 +26,16 @@ public class MainActivity extends AppCompatActivity {
         if (securityToken.equals("")) {
             Intent intent = new Intent(MainActivity.this, LoginActivity.class);
             startActivity(intent);
+            return;
+        } else {
+            token = securityToken;
         }
+
+
+        setContentView(R.layout.activity_main);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener((View view) -> {
@@ -41,6 +49,13 @@ public class MainActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
+        if (token.equals("")) {
+            MenuItem signInMenu = menu.findItem(R.id.action_signin);
+            signInMenu.setVisible(true);
+        } else {
+            MenuItem logoutMenu = menu.findItem(R.id.action_logout);
+            logoutMenu.setVisible(true);
+        }
         return true;
     }
 
@@ -53,6 +68,18 @@ public class MainActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            return true;
+        }
+        if (id == R.id.action_signin) {
+            Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+            startActivity(intent);
+            return true;
+        }
+        if (id == R.id.action_logout) {
+            Token tk = new Token(getApplicationContext());
+            tk.clear();
+            Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+            startActivity(intent);
             return true;
         }
 

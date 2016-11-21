@@ -10,4 +10,8 @@ public class ApiBase {
     {
         return API_BASE_URL + "/login";
     }
+    public static String getSaveBlogAddUrl(String Token)
+    {
+        return API_BASE_URL + "/save-blog-add?token=" + Token;
+    }
 }

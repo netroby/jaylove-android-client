@@ -1,5 +1,6 @@
 package com.netroby.daylove.android.daylove;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -33,7 +34,6 @@ import java.util.Map;
 public class LoginActivity extends AppCompatActivity {
 
     public static final String LOG_TAG = "daylove.login";
-    public static final String SHARED_SETTING_TAG = "daylove.config";
 
 
     // UI references.
@@ -123,12 +123,11 @@ public class LoginActivity extends AppCompatActivity {
                             Token tk = new Token(getApplicationContext());
                             tk.set(token);
                             Log.d(LOG_TAG, response.get("token").toString());
+                            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                            startActivity(intent);
                         } catch (Exception e) {
                             Log.d(LOG_TAG, e.getMessage());
                         }
-                        String respString = response.toString();
-                        Log.d(LOG_TAG, respString);
-                        Toast.makeText(getApplicationContext(), respString, Toast.LENGTH_SHORT).show();
                     },
                     (VolleyError error) -> {
                         Log.d(LOG_TAG, error.toString());

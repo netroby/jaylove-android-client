@@ -8,20 +8,25 @@ import android.content.SharedPreferences;
  */
 
 public class Token {
-    private  Context context;
+    private SharedPreferences setting;
     public  Token(Context context) {
-        this.context = context;
+        this.setting = context.getSharedPreferences(SHARED_SETTING_TAG, 0);
     }
     private static final String SHARED_SETTING_TAG = "daylove.config";
     public  String  get() {
-        SharedPreferences setting = context.getSharedPreferences(SHARED_SETTING_TAG, 0);
         return setting.getString("token", "");
     }
 
     public  boolean set(String token) {
-        SharedPreferences setting = context.getSharedPreferences(SHARED_SETTING_TAG, 0);
         SharedPreferences.Editor edit = setting.edit();
         edit.putString("token", token);
+        edit.apply();
+        return true;
+    }
+
+    public boolean clear() {
+        SharedPreferences.Editor edit = setting.edit();
+        edit.putString("token", "");
         edit.apply();
         return true;
     }

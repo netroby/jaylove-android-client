@@ -7,4 +7,10 @@
         android:orderInCategory="100"
         android:title="@string/action_settings"
         app:showAsAction="never" />
+    <item android:title="Sign In"
+        android:id="@+id/action_signin"
+        android:visible="false" />
+    <item android:title="Logout"
+        android:id="@+id/action_logout"
+        android:visible="false" />
 </menu>
