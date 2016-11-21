@@ -14,4 +14,8 @@ public class ApiBase {
     {
         return API_BASE_URL + "/save-blog-add?token=" + Token;
     }
+    public static String getListUrl(String Token)
+    {
+        return API_BASE_URL + "/list?token=" + Token;
+    }
 }

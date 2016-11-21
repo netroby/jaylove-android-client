@@ -5,16 +5,34 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.webkit.WebView;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
+import com.netroby.daylove.android.daylove.common.ApiBase;
 import com.netroby.daylove.android.daylove.common.Token;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+
 public class MainActivity extends AppCompatActivity {
+    public static final String LOG_TAG = "daylove.main";
 
     public static String token = "";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -39,10 +57,41 @@ public class MainActivity extends AppCompatActivity {
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener((View view) -> {
-                Toast.makeText(getApplicationContext(), "Go create blog", Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(MainActivity.this, CreateActivity.class);
-                startActivity(intent);
+            Toast.makeText(getApplicationContext(), "Go create blog", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(MainActivity.this, CreateActivity.class);
+            startActivity(intent);
         });
+
+        String listURL = ApiBase.getListUrl(token);
+        JSONObject jParams = new JSONObject();
+        RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST,
+                listURL, jParams,
+                (JSONObject response) -> {
+                    LinearLayout ll = (LinearLayout) findViewById(R.id.mainLinearLayout);
+                    try {
+                        Log.d(LOG_TAG, response.toString());
+                        JSONObject data = response.getJSONObject("data");
+                        Iterator<String> iter = data.keys();
+                        while (iter.hasNext()) {
+                            JSONObject line = data.getJSONObject(iter.next());
+                            WebView wv = new WebView(this);
+                            wv.loadData(line.getString("content"), "text/html;charset=UTF-8", "UTF-8");
+                            ll.addView(wv);
+                        }
+                    } catch (Exception e) {
+                        Log.d(LOG_TAG, e.getMessage());
+                    }
+                },
+                (VolleyError error) -> {
+                    Log.d(LOG_TAG, error.toString());
+                    Toast.makeText(getApplicationContext(), error.toString(), Toast.LENGTH_SHORT).show();
+                }
+        );
+        requestQueue.add(jsonObjectRequest);
+        requestQueue.start();
+
+
     }
 
     @Override
