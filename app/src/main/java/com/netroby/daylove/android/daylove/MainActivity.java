@@ -71,12 +71,14 @@ public class MainActivity extends AppCompatActivity {
                     LinearLayout ll = (LinearLayout) findViewById(R.id.mainLinearLayout);
                     try {
                         Log.d(LOG_TAG, response.toString());
-                        JSONObject data = response.getJSONObject("data");
-                        Iterator<String> iter = data.keys();
-                        while (iter.hasNext()) {
-                            JSONObject line = data.getJSONObject(iter.next());
+                        JSONArray data = response.getJSONArray("data");
+                        Integer len = data.length();
+                        for (Integer i = 0 ; i < len; i++){
+                            JSONObject line = data.getJSONObject(i);
                             WebView wv = new WebView(this);
-                            wv.loadData(line.getString("content"), "text/html;charset=UTF-8", "UTF-8");
+                            String content = "[" + line.getString("PublishTime") + "]<br />" + line.getString("Content");
+                            Log.d(LOG_TAG, content);
+                            wv.loadData(content, "text/html;charset=UTF-8", "UTF-8");
                             ll.addView(wv);
                         }
                     } catch (Exception e) {
