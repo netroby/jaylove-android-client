@@ -3,7 +3,6 @@ package com.netroby.daylove.android.daylove;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
@@ -23,20 +22,18 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         //Check if token exists
-        String securityToken = Token.get();
+        Token tk = new Token(getApplicationContext());
+        String securityToken = tk.get();
         if (securityToken.equals("")) {
             Intent intent = new Intent(MainActivity.this, LoginActivity.class);
             startActivity(intent);
         }
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+        fab.setOnClickListener((View view) -> {
                 Toast.makeText(getApplicationContext(), "Go create blog", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(MainActivity.this, CreateActivity.class);
                 startActivity(intent);
-            }
         });
     }
 

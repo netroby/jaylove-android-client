@@ -1,65 +1,40 @@
 package com.netroby.daylove.android.daylove;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
-import android.annotation.TargetApi;
-import android.content.pm.PackageManager;
-import android.support.annotation.NonNull;
-import android.support.design.widget.Snackbar;
-import android.support.v7.app.AppCompatActivity;
-import android.app.LoaderManager.LoaderCallbacks;
-
-import android.content.CursorLoader;
-import android.content.Loader;
-import android.database.Cursor;
-import android.net.Uri;
-import android.os.AsyncTask;
-
-import android.os.Build;
+import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.provider.ContactsContract;
+import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.inputmethod.EditorInfo;
-import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 import com.netroby.daylove.android.daylove.common.ApiBase;
+import com.netroby.daylove.android.daylove.common.Token;
 
-import java.io.InputStream;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
+import org.json.JSONObject;
 
-import static android.Manifest.permission.READ_CONTACTS;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * A login screen that offers login via username/password.
  */
 public class LoginActivity extends AppCompatActivity {
 
-    /**
-     * Id to identity READ_CONTACTS permission request.
-     */
-    private static final int REQUEST_READ_CONTACTS = 0;
+    public static final String LOG_TAG = "daylove.login";
+    public static final String SHARED_SETTING_TAG = "daylove.config";
 
-    /**
-     * A dummy authentication store containing known user names and passwords.
-     * TODO: remove after connecting to a real authentication system.
-     */
-    private static final String[] DUMMY_CREDENTIALS = new String[]{
-            "foo@example.com:hello", "bar@example.com:world"
-    };
-    /**
-     * Keep track of the login task to ensure we can cancel it if requested.
-     */
-    private UserLoginTask mAuthTask = null;
 
     // UI references.
     private AutoCompleteTextView musernameView;
@@ -69,27 +44,22 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
         // Set up the login form.
         musernameView = (AutoCompleteTextView) findViewById(R.id.username);
 
         mPasswordView = (EditText) findViewById(R.id.password);
-        mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
-                if (id == R.id.login || id == EditorInfo.IME_NULL) {
-                    attemptLogin();
-                    return true;
-                }
-                return false;
+        mPasswordView.setOnEditorActionListener((TextView textView, int id, KeyEvent keyEvent) -> {
+            if (id == R.id.login || id == EditorInfo.IME_NULL) {
+                attemptLogin();
+                return true;
             }
+            return false;
         });
 
         Button musernameSignInButton = (Button) findViewById(R.id.username_sign_in_button);
-        musernameSignInButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                attemptLogin();
-            }
+        musernameSignInButton.setOnClickListener((View view) -> {
+            attemptLogin();
         });
 
     }
@@ -101,10 +71,6 @@ public class LoginActivity extends AppCompatActivity {
      * errors are presented and no actual login attempt is made.
      */
     private void attemptLogin() {
-        if (mAuthTask != null) {
-            return;
-        }
-
         // Reset errors.
         musernameView.setError(null);
         mPasswordView.setError(null);
@@ -141,8 +107,36 @@ public class LoginActivity extends AppCompatActivity {
         } else {
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
-            mAuthTask = new UserLoginTask(username, password);
-            mAuthTask.execute((Void) null);
+            Log.d(LOG_TAG, "Username:" + username);
+            Log.d(LOG_TAG, "Password:" + password);
+            String loginURL = ApiBase.getLoginUrl();
+            Map<String, String> paramsMap = new HashMap<>();
+            paramsMap.put("username", username);
+            paramsMap.put("password", password);
+            JSONObject jParams = new JSONObject(paramsMap);
+            RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
+            JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST,
+                    loginURL, jParams,
+                    (JSONObject response) -> {
+                        try {
+                            String token = response.getString("token");
+                            Token tk = new Token(getApplicationContext());
+                            tk.set(token);
+                            Log.d(LOG_TAG, response.get("token").toString());
+                        } catch (Exception e) {
+                            Log.d(LOG_TAG, e.getMessage());
+                        }
+                        String respString = response.toString();
+                        Log.d(LOG_TAG, respString);
+                        Toast.makeText(getApplicationContext(), respString, Toast.LENGTH_SHORT).show();
+                    },
+                    (VolleyError error) -> {
+                        Log.d(LOG_TAG, error.toString());
+                        Toast.makeText(getApplicationContext(), "Can not login", Toast.LENGTH_SHORT).show();
+                    }
+            );
+            requestQueue.add(jsonObjectRequest);
+            requestQueue.start();
         }
     }
 
@@ -156,69 +150,5 @@ public class LoginActivity extends AppCompatActivity {
         return password.length() > 4;
     }
 
-
-
-
-    /**
-     * Represents an asynchronous login/registration task used to authenticate
-     * the user.
-     */
-    public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
-
-        private final String musername;
-        private final String mPassword;
-
-        UserLoginTask(String username, String password) {
-            musername = username;
-            mPassword = password;
-        }
-
-        @Override
-        protected Boolean doInBackground(Void... params) {
-            // TODO: attempt authentication against a network service.
-
-            try {
-                // Simulate network access.
-                InputStream is = null;
-                int len = 65535;
-                try {
-                    URL url = new URL(ApiBase::getLoginUrl());
-
-                } catch (Exception e) {
-                    e.printStackTrace();
-                } finally {
-                    try {
-                        if (is != null) {
-                            is.close();
-                        }
-                    } catch (Exception e) {
-                        Toast.makeText(getApplicationContext(), "Can not close net conn", Toast.LENGTH_SHORT);
-                    }
-                }
-            } catch (InterruptedException e) {
-                return false;
-            }
-
-
-            // TODO: register the new account here.
-            return true;
-        }
-
-        @Override
-        protected void onPostExecute(final Boolean success) {
-            mAuthTask = null;
-            if (success) {
-                finish();
-            } else {
-                mPasswordView.setError(getString(R.string.error_incorrect_password));
-                mPasswordView.requestFocus();
-            }
-        }
-
-        @Override
-        protected void onCancelled() {
-            mAuthTask = null;
-        }
-    }
 }
 

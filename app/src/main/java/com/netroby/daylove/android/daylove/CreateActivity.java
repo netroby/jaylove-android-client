@@ -13,7 +13,8 @@ public class CreateActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create);
         //Check if token exists
-        String securityToken = Token.get();
+        Token tk = new Token(getApplicationContext());
+        String securityToken = tk.get();
         if (securityToken.equals("")) {
             Intent intent = new Intent(CreateActivity.this, LoginActivity.class);
             startActivity(intent);
