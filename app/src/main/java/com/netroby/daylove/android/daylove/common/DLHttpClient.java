@@ -11,13 +11,21 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 
 public class DLHttpClient {
+    private static DLHttpClient _instance;
     private OkHttpClient client;
     private static final MediaType JSON =
             MediaType.parse("application/json;charset=utf-8");
-    public DLHttpClient() {
+    private DLHttpClient() {
         client = new OkHttpClient.Builder()
                 .connectionPool(new ConnectionPool(10, 60, TimeUnit.SECONDS))
                 .build();
+    }
+    public static DLHttpClient getInstance()
+    {
+        if (_instance == null) {
+            _instance = new DLHttpClient();
+        }
+        return _instance;
     }
     public void doPost(String url, String json, Callback callback) throws IOException {
         RequestBody body = RequestBody.create(JSON, json);

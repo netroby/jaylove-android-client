@@ -32,7 +32,7 @@ public class CreateActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create);
         //Check if token exists
-        Token tk = new Token(getApplicationContext());
+        Token tk = Token.getInstance(getApplicationContext());
         String securityToken = tk.get();
         if (securityToken.equals("")) {
             startActivity(new Intent(CreateActivity.this, LoginActivity.class));
@@ -49,7 +49,7 @@ public class CreateActivity extends AppCompatActivity {
         paramsMap.put("content", content);
         JSONObject jParams = new JSONObject(paramsMap);
 
-        DLHttpClient httpClient = new DLHttpClient();
+        DLHttpClient httpClient = DLHttpClient.getInstance();
         try {
             httpClient.doPost(loginURL, jParams.toString(), new Callback() {
                 @Override
@@ -69,7 +69,7 @@ public class CreateActivity extends AppCompatActivity {
                                 Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
                                 startActivity(new Intent(getApplicationContext(), MainActivity.class));
                             } catch (Exception e) {
-                                Token tk = new Token(getApplicationContext());
+                                Token tk = Token.getInstance(getApplicationContext());
                                 tk.clear();
                                 Toast.makeText(getApplicationContext(), "Create failed", Toast.LENGTH_SHORT).show();
                                 Log.d(LOG_TAG, e.getMessage());

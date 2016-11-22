@@ -43,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         //Check if token exists
-        Token tk = new Token(getApplicationContext());
+        Token tk = Token.getInstance(getApplicationContext());
         String securityToken = tk.get();
         if (securityToken.equals("")) {
             startActivity(new Intent(MainActivity.this, LoginActivity.class));
@@ -68,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
         params.put("page", "1");
         JSONObject jParams = new JSONObject(params);
 
-        DLHttpClient httpClient = new DLHttpClient();
+        DLHttpClient httpClient = DLHttpClient.getInstance();
         try {
             httpClient.doPost(listURL, jParams.toString(), new Callback() {
                 @Override
@@ -137,7 +137,7 @@ public class MainActivity extends AppCompatActivity {
             return true;
         }
         if (id == R.id.action_logout) {
-            Token tk = new Token(getApplicationContext());
+            Token tk = Token.getInstance(getApplicationContext());
             tk.clear();
             startActivity(new Intent(MainActivity.this, LoginActivity.class));
             return true;

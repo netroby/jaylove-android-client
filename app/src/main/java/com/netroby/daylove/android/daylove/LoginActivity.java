@@ -116,7 +116,7 @@ public class LoginActivity extends AppCompatActivity {
             paramsMap.put("username", username);
             paramsMap.put("password", password);
             JSONObject jParams = new JSONObject(paramsMap);
-            DLHttpClient httpClient = new DLHttpClient();
+            DLHttpClient httpClient = DLHttpClient.getInstance();
             try {
                 httpClient.doPost(loginURL, jParams.toString(), new Callback() {
                     @Override
@@ -133,7 +133,7 @@ public class LoginActivity extends AppCompatActivity {
                             try {
                                 JSONObject response = new JSONObject(resp.body().string());
                                 String token = response.getString("token");
-                                Token tk = new Token(getApplicationContext());
+                                Token tk = Token.getInstance(getApplicationContext());
                                 tk.set(token);
                                 Log.d(LOG_TAG, response.get("token").toString());
                                 Intent intent = new Intent(getApplicationContext(), MainActivity.class);

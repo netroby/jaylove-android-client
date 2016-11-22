@@ -8,10 +8,20 @@ import android.content.SharedPreferences;
  */
 
 public class Token {
+    private static Token _instance;
     private SharedPreferences setting;
-    public  Token(Context context) {
+    private  Token(Context context) {
         this.setting = context.getSharedPreferences(SHARED_SETTING_TAG, 0);
     }
+
+    public static Token getInstance(Context context)
+    {
+        if (_instance == null) {
+            _instance = new Token(context);
+        }
+        return _instance;
+    }
+
     private static final String SHARED_SETTING_TAG = "daylove.config";
     public  String  get() {
         return setting.getString("token", "");
