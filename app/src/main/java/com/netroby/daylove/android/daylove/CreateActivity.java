@@ -8,7 +8,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.netroby.daylove.android.daylove.common.ApiBase;
@@ -68,7 +67,7 @@ public class CreateActivity extends AppCompatActivity {
         String content = contentEditText.getText().toString();
         String loginURL = ApiBase.getSaveBlogAddUrl(token);
         Map<String, String> paramsMap = new HashMap<>();
-        paramsMap.put("content", content);
+        paramsMap.put("content", content.replaceAll("\r?\n", "<br />"));
         JSONObject jParams = new JSONObject(paramsMap);
 
         DLHttpClient httpClient = DLHttpClient.getInstance();

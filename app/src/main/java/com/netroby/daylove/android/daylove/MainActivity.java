@@ -60,12 +60,17 @@ public class MainActivity extends AppCompatActivity {
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener((View view) -> startActivity(new Intent(MainActivity.this, CreateActivity.class)));
+        loadList();
 
+    }
+
+    public void loadList() {
+        loadList(1);
+    }
+    public void loadList(Integer page) {
         String listURL = ApiBase.getListUrl(token);
-
-
         Map<String, String> params = new HashMap<>();
-        params.put("page", "1");
+        params.put("page", Integer.toString(page));
         JSONObject jParams = new JSONObject(params);
 
         DLHttpClient httpClient = DLHttpClient.getInstance();
@@ -85,8 +90,9 @@ public class MainActivity extends AppCompatActivity {
                             Log.d(LOG_TAG, response.toString());
                             JSONArray data = response.getJSONArray("data");
                             Integer len = data.length();
+                            LinearLayout ll = (LinearLayout) findViewById(R.id.mainLinearLayout);
+                            ll.removeAllViews();
                             for (Integer i = 0; i < len; i++) {
-                                LinearLayout ll = (LinearLayout) findViewById(R.id.mainLinearLayout);
                                 JSONObject line = data.getJSONObject(i);
                                 Log.d(LOG_TAG, line.toString());
                                 WebView wv = new WebView(context);
@@ -105,7 +111,6 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -140,6 +145,10 @@ public class MainActivity extends AppCompatActivity {
             Token tk = Token.getInstance(getApplicationContext());
             tk.clear();
             startActivity(new Intent(MainActivity.this, LoginActivity.class));
+            return true;
+        }
+        if (id == R.id.action_reload_list) {
+            loadList();
             return true;
         }
 
