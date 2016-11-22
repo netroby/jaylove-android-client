@@ -8,6 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.netroby.daylove.android.daylove.common.ApiBase;
@@ -29,6 +30,15 @@ public class CreateActivity extends AppCompatActivity {
     private String token;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Intent intent = getIntent();
+        String action = intent.getAction();
+        String type = intent.getType();
+
+        if (Intent.ACTION_SEND.equals(action) && type != null) {
+            if ("text/plain".equals(type)) {
+                handleSendText(intent);
+            }
+        }
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create);
         //Check if token exists
@@ -38,6 +48,18 @@ public class CreateActivity extends AppCompatActivity {
             startActivity(new Intent(CreateActivity.this, LoginActivity.class));
         } else {
             token = securityToken;
+        }
+
+
+    }
+    public void handleSendText(Intent intent) {
+        String sharedText = intent.getStringExtra(Intent.EXTRA_TEXT);
+        if (sharedText != null) {
+            Handler handler = new Handler(Looper.getMainLooper());
+            handler.post(() -> {
+                EditText contentEditText = (EditText) findViewById(R.id.editText);
+                contentEditText.setText(sharedText);
+            });
         }
     }
 
