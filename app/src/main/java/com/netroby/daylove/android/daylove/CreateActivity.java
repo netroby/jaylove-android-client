@@ -1,25 +1,28 @@
 package com.netroby.daylove.android.daylove;
 
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
 import com.netroby.daylove.android.daylove.common.ApiBase;
+import com.netroby.daylove.android.daylove.common.DLHttpClient;
 import com.netroby.daylove.android.daylove.common.Token;
 
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.Response;
 
 public class CreateActivity extends AppCompatActivity {
     private static final String LOG_TAG = "daylove.create";
@@ -32,8 +35,7 @@ public class CreateActivity extends AppCompatActivity {
         Token tk = new Token(getApplicationContext());
         String securityToken = tk.get();
         if (securityToken.equals("")) {
-            Intent intent = new Intent(CreateActivity.this, LoginActivity.class);
-            startActivity(intent);
+            startActivity(new Intent(CreateActivity.this, LoginActivity.class));
         } else {
             token = securityToken;
         }
@@ -46,29 +48,40 @@ public class CreateActivity extends AppCompatActivity {
         Map<String, String> paramsMap = new HashMap<>();
         paramsMap.put("content", content);
         JSONObject jParams = new JSONObject(paramsMap);
-        RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST,
-                loginURL, jParams,
-                (JSONObject response) -> {
-                    try {
-                        String msg = response.getString("msg");
-                        Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
-                        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                        startActivity(intent);
-                    } catch (Exception e) {
-                        Token tk = new Token(getApplicationContext());
-                        tk.clear();
-                        Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
-                        startActivity(intent);
-                        Log.d(LOG_TAG, e.getMessage());
-                    }
-                },
-                (VolleyError error) -> {
-                    Log.d(LOG_TAG, error.toString());
-                    Toast.makeText(getApplicationContext(), "Can not login", Toast.LENGTH_SHORT).show();
+
+        DLHttpClient httpClient = new DLHttpClient();
+        try {
+            httpClient.doPost(loginURL, jParams.toString(), new Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    e.printStackTrace();
+                    Handler handler = new Handler(Looper.getMainLooper());
+                    handler.post(() -> Toast.makeText(getApplicationContext(), "failed to create", Toast.LENGTH_SHORT).show());
                 }
-        );
-        requestQueue.add(jsonObjectRequest);
-        requestQueue.start();
+
+                @Override
+                public void onResponse(Call call, Response resp) throws IOException {
+                    Handler handler = new Handler(Looper.getMainLooper());
+                    handler.post(() -> {
+                            try {
+                                JSONObject response = new JSONObject(resp.body().string());
+                                String msg = response.getString("msg");
+                                Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
+                                startActivity(new Intent(getApplicationContext(), MainActivity.class));
+                            } catch (Exception e) {
+                                Token tk = new Token(getApplicationContext());
+                                tk.clear();
+                                Toast.makeText(getApplicationContext(), "Create failed", Toast.LENGTH_SHORT).show();
+                                Log.d(LOG_TAG, e.getMessage());
+                                startActivity(new Intent(getApplicationContext(), LoginActivity.class));
+                            }
+
+                    });
+                }
+            });
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 }
