@@ -19,10 +19,13 @@ import com.netroby.daylove.android.daylove.common.ApiBase;
 import com.netroby.daylove.android.daylove.common.DLHttpClient;
 import com.netroby.daylove.android.daylove.common.Token;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import okhttp3.Call;
@@ -122,6 +125,10 @@ public class CreateActivity extends AppCompatActivity {
         String loginURL = ApiBase.getSaveBlogAddUrl(token);
         Map<String, String> paramsMap = new HashMap<>();
         paramsMap.put("content", content.replaceAll("\r?\n", "<br />"));
+        ArrayList<String> list = new ArrayList<>();
+        list.add(uploadedImageUrl);
+        String imagesJsonString = new JSONArray(list).toString();
+        paramsMap.put("images", imagesJsonString);
         JSONObject jParams = new JSONObject(paramsMap);
 
         DLHttpClient httpClient = DLHttpClient.getInstance();
