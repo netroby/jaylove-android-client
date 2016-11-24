@@ -1,5 +1,6 @@
 package com.netroby.daylove.android.daylove.common;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
@@ -34,5 +35,15 @@ public class DLHttpClient {
                 .post(body)
                 .build();
         client.newCall(request).enqueue(callback);
+    }
+    public void fileUpload(String url, String fileUri, Callback callback) throws IOException {
+        MediaType MEDIA_TYPE_JPG = MediaType.parse("image/jpg");
+
+            File file = new File(fileUri);
+            Request request = new Request.Builder()
+                    .url(url)
+                    .post(RequestBody.create(MEDIA_TYPE_JPG, file))
+                    .build();
+            client.newCall(request).enqueue(callback);
     }
 }
