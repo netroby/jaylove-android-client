@@ -136,8 +136,13 @@ public class LoginActivity extends AppCompatActivity {
                                 Token tk = Token.getInstance(getApplicationContext());
                                 tk.set(token);
                                 Log.d(LOG_TAG, response.get("token").toString());
-                                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                                startActivity(intent);
+                                Handler mhandler = new Handler(Looper.getMainLooper());
+                                mhandler.post(() -> {
+                                    Toast.makeText(getApplicationContext(), "Success login", Toast.LENGTH_SHORT).show();
+                                    Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                                    startActivity(intent);
+                                });
+
                             } catch (Exception e) {
                                 Log.d(LOG_TAG, e.getMessage());
                                 e.printStackTrace();

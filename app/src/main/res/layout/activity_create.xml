@@ -32,7 +32,8 @@
             android:layout_height="wrap_content"
             app:srcCompat="@android:drawable/ic_menu_camera"
             android:id="@+id/btn_select_images"
-            android:layout_weight="1" />
+            android:layout_weight="1"
+            android:onClick="selectImage" />
 
         <Button
             android:text="@string/create_submit"
@@ -56,8 +57,9 @@
 
     <ImageView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="150dp"
         app:srcCompat="@android:drawable/ic_menu_report_image"
-        android:id="@+id/imageView" />
+        android:id="@+id/imageView"
+        android:layout_weight="0.12" />
 
 </LinearLayout>

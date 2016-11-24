@@ -5,8 +5,8 @@ package com.netroby.daylove.android.daylove.common;
  */
 
 public class ApiBase {
-    //public static String API_BASE_URL="https://love.netroby.com/api";
-    public static String API_BASE_URL="https://127.0.0.1:8080/api";
+    public static String API_BASE_URL="https://love.netroby.com/api";
+    //public static String API_BASE_URL="http://10.0.12.125:8080/api";
     public static String getLoginUrl()
     {
         return API_BASE_URL + "/login";
@@ -20,6 +20,6 @@ public class ApiBase {
         return API_BASE_URL + "/list?token=" + Token;
     }
     public static String getFileUploadUrl(String Token) {
-        return API_BASE_URL + "/file-upload?token" + Token;
+        return API_BASE_URL + "/file-upload?token=" + Token;
     }
 }

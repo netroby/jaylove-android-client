@@ -16,4 +16,5 @@
         completions."
     </string>
     <string name="create_submit">Submit</string>
+    <string name="create_submit_sending">Sending</string>
 </resources>

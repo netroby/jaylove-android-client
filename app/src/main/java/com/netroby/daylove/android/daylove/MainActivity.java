@@ -13,21 +13,28 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.webkit.WebView;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.integration.okhttp3.OkHttpUrlLoader;
+import com.bumptech.glide.load.model.GlideUrl;
 import com.netroby.daylove.android.daylove.common.ApiBase;
 import com.netroby.daylove.android.daylove.common.DLHttpClient;
 import com.netroby.daylove.android.daylove.common.Token;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
 import okhttp3.Call;
 import okhttp3.Callback;
+import okhttp3.OkHttpClient;
 import okhttp3.Response;
 
 
@@ -58,8 +65,15 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
 
+
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener((View view) -> startActivity(new Intent(MainActivity.this, CreateActivity.class)));
+
+        DLHttpClient httpClient = DLHttpClient.getInstance();
+        Glide.get(this)
+                .register(GlideUrl.class, InputStream.class, new OkHttpUrlLoader.Factory(httpClient.getClient()));
+
+
         loadList();
 
     }
@@ -100,6 +114,16 @@ public class MainActivity extends AppCompatActivity {
                                 Log.d(LOG_TAG, content);
                                 wv.loadData(content, "text/html;charset=UTF-8", "UTF-8");
                                 ll.addView(wv);
+                                    JSONArray imageList = line.getJSONArray("Images");
+                                    int imagesNums = imageList.length();
+                                    for (int j = 0; j < imagesNums; j++) {
+                                        ImageView iv = new ImageView(context);
+
+                                        ll.addView(iv);
+                                        String imageUrl = imageList.getString(j) + "?act=resize&x=1024";
+                                        Log.d(LOG_TAG, "Try to display image: " + imageUrl);
+                                        Glide.with(context).load(imageUrl).into(iv);
+                                    }
                             }
                         } catch (Exception e) {
                             e.printStackTrace();
