@@ -128,20 +128,31 @@ public class LoginActivity extends AppCompatActivity {
 
                     @Override
                     public void onResponse(Call call, Response resp) throws IOException {
+                        Log.d(LOG_TAG, "Response code: "  + resp.code());
                         Handler handler = new Handler(Looper.getMainLooper());
                         handler.post(() -> {
                             try {
-                                JSONObject response = new JSONObject(resp.body().string());
-                                String token = response.getString("token");
-                                Token tk = Token.getInstance(getApplicationContext());
-                                tk.set(token);
-                                Log.d(LOG_TAG, response.get("token").toString());
+
                                 Handler mhandler = new Handler(Looper.getMainLooper());
-                                mhandler.post(() -> {
-                                    Toast.makeText(getApplicationContext(), "Success login", Toast.LENGTH_SHORT).show();
-                                    Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                                    startActivity(intent);
-                                });
+                                if (resp.code() != 200) {
+                                    mhandler.post(() -> {
+                                        Toast.makeText(getApplicationContext(), "Login failed, pleas try again", Toast.LENGTH_SHORT).show();
+                                    });
+                                } else {
+
+                                    String respBodyString = resp.body().string();
+                                    Log.d(LOG_TAG, "Response body String : " + respBodyString);
+                                    JSONObject response = new JSONObject(respBodyString);
+                                    String token = response.getString("token");
+                                    Token tk = Token.getInstance(getApplicationContext());
+                                    tk.set(token);
+                                    Log.d(LOG_TAG, response.get("token").toString());
+                                    mhandler.post(() -> {
+                                        Toast.makeText(getApplicationContext(), "Success login", Toast.LENGTH_SHORT).show();
+                                        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                                        startActivity(intent);
+                                    });
+                                }
 
                             } catch (Exception e) {
                                 Log.d(LOG_TAG, e.getMessage());

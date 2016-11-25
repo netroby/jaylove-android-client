@@ -16,6 +16,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
@@ -101,9 +102,17 @@ public class CreateActivity extends AppCompatActivity {
                         int colIndex = cursor.getColumnIndex(filePathColumn[0]);
                         String picPath = cursor.getString(colIndex);
                         cursor.close();
-                        ImageView imageView = (ImageView) findViewById(R.id.imageView);
-                        imageView.setImageBitmap(BitmapFactory.decodeFile(picPath));
-
+                        new Handler(Looper.getMainLooper()).post(() -> {
+                            ImageView imageView = (ImageView) findViewById(R.id.imageView);
+                            imageView.setVisibility(View.VISIBLE);
+                            imageView.getLayoutParams().height = 250;
+                            imageView.requestLayout();
+                            imageView.setImageBitmap(BitmapFactory.decodeFile(picPath));
+                        });
+                        //Make toast
+                        new Handler(Looper.getMainLooper()).post(() -> {
+                            Toast.makeText(context, "Begin to upload image , please wait", Toast.LENGTH_SHORT).show();
+                        });
                         DLHttpClient httpClient = DLHttpClient.getInstance();
                         String url = ApiBase.getFileUploadUrl(token);
                         Log.d(LOG_TAG, "Upload to url" + url);
@@ -128,9 +137,15 @@ public class CreateActivity extends AppCompatActivity {
                                                 @Override
                                                 public void onResponse(Call call, Response response) throws IOException {
                                                     try {
+                                                        Handler handler = new Handler(Looper.getMainLooper());
+                                                        if (response.code() != 200) {
+                                                            handler.post(()->{
+                                                                Toast.makeText(getApplicationContext(), "Image uploaded Failed, try to logout then login", Toast.LENGTH_SHORT).show();
+                                                            });
+                                                            return;
+                                                        }
                                                         JSONObject resp = new JSONObject(response.body().string());
                                                         uploadedImageUrl = resp.getString("url");
-                                                        Handler handler = new Handler(Looper.getMainLooper());
                                                         handler.post(() -> {
                                                             Toast.makeText(getApplicationContext(), "Image uploaded success, then you can send post", Toast.LENGTH_SHORT).show();
                                                         });
@@ -190,6 +205,12 @@ public class CreateActivity extends AppCompatActivity {
                     Handler handler = new Handler(Looper.getMainLooper());
                     handler.post(() -> {
                         try {
+                            if (resp.code() != 200) {
+                                new Handler(Looper.getMainLooper()).post(() -> {
+                                   Toast.makeText(context, "Can not post, logout then login again !", Toast.LENGTH_SHORT).show();
+                                });
+                                return;
+                            }
                             JSONObject response = new JSONObject(resp.body().string());
                             String msg = response.getString("msg");
                             Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
