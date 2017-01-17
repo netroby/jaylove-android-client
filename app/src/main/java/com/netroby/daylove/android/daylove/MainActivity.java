@@ -68,7 +68,10 @@ public class MainActivity extends AppCompatActivity {
 
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener((View view) -> startActivity(new Intent(MainActivity.this, CreateActivity.class)));
+        fab.setOnClickListener((View view) ->  {
+            startActivity(new Intent(MainActivity.this, CreateActivity.class));
+            finish();
+        });
 
         DLHttpClient httpClient = DLHttpClient.getInstance();
         Glide.get(this)
