@@ -13,7 +13,15 @@ object DLHttpClient {
 
     @Throws(IOException::class)
     fun preparePool()  {
-        client!!.newCall(Request.Builder().url(ApiBase.API_BASE_URL).head().build()).execute()
+        client!!.newCall(Request.Builder().url(ApiBase.API_BASE_URL).head().build()).enqueue(object: Callback {
+            override fun onFailure(call: Call?, e: IOException?) {
+
+            }
+
+            override fun onResponse(call: Call?, response: Response?) {
+
+            }
+        })
     }
 
     @Throws(IOException::class)
