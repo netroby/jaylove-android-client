@@ -14,10 +14,14 @@ import okhttp3.RequestBody
 object DLHttpClient {
 
     private val JSON = MediaType.parse("application/json;charset=utf-8")
-    val client = OkHttpClient.Builder()
+    val client: OkHttpClient? = OkHttpClient.Builder()
                 .connectionPool(ConnectionPool(10, 60, TimeUnit.SECONDS))
                 .build()
 
+    @Throws(IOException::class)
+    fun preparePool()  {
+        client!!.newCall(Request.Builder().url(ApiBase.API_BASE_URL).head().build())
+    }
 
     @Throws(IOException::class)
     fun doPost(url: String, json: String, callback: Callback) {
@@ -26,7 +30,7 @@ object DLHttpClient {
                 .url(url)
                 .post(body)
                 .build()
-        client.newCall(request).enqueue(callback)
+        client!!.newCall(request).enqueue(callback)
     }
 
     @Throws(IOException::class)
@@ -41,6 +45,6 @@ object DLHttpClient {
                 .url(url)
                 .post(requestBody)
                 .build()
-        client.newCall(request).enqueue(callback)
+        client!!.newCall(request).enqueue(callback)
     }
 }

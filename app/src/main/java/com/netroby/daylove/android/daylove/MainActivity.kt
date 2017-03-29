@@ -44,6 +44,7 @@ class MainActivity : AppCompatActivity() {
     var token: String? = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        DLHttpClient.preparePool()
         context = applicationContext
         Token.registerContext(applicationContext)
         super.onCreate(savedInstanceState)
@@ -62,19 +63,17 @@ class MainActivity : AppCompatActivity() {
         val toolbar = findViewById(R.id.toolbar) as Toolbar
         setSupportActionBar(toolbar)
 
-
-        val fab = findViewById(R.id.fab) as FloatingActionButton
-        fab.setOnClickListener { view: View ->
-            startActivity(Intent(this@MainActivity, CreateActivity::class.java))
-            finish()
-        }
-
         Glide.get(this)
                 .register(GlideUrl::class.java, InputStream::class.java, OkHttpUrlLoader.Factory(DLHttpClient.client))
 
 
         loadList()
 
+    }
+
+    fun goCreateActivity(v: View) {
+        startActivity(Intent(this@MainActivity, CreateActivity::class.java))
+        finish()
     }
 
     fun buttonReEnable() {

@@ -19,5 +19,6 @@
     <string name="create_submit_sending">Sending</string>
     <string name="string_nav_prev">Prev page</string>
     <string name="string_nav_next">Next page</string>
+    <string name="string_btn_publish">+</string>
     <string name="string_loading">Loading\.\.\.</string>
 </resources>
