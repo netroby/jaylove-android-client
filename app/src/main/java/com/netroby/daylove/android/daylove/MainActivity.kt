@@ -1,0 +1,213 @@
+package com.netroby.daylove.android.daylove
+
+import android.content.Context
+import android.content.Intent
+import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.support.design.widget.FloatingActionButton
+import android.support.v7.app.AppCompatActivity
+import android.support.v7.widget.Toolbar
+import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
+import android.view.View
+import android.webkit.WebView
+import android.widget.Button
+import android.widget.ImageView
+import android.widget.LinearLayout
+import android.widget.Toast
+
+import com.bumptech.glide.Glide
+import com.bumptech.glide.integration.okhttp3.OkHttpUrlLoader
+import com.bumptech.glide.load.model.GlideUrl
+import com.netroby.daylove.android.daylove.common.ApiBase
+import com.netroby.daylove.android.daylove.common.DLHttpClient
+import com.netroby.daylove.android.daylove.common.Token
+
+import org.json.JSONArray
+import org.json.JSONObject
+
+import java.io.IOException
+import java.io.InputStream
+import java.util.HashMap
+
+import okhttp3.Call
+import okhttp3.Callback
+import okhttp3.Response
+
+
+class MainActivity : AppCompatActivity() {
+    var context: Context? = null
+    var page = 1
+    val LOG_TAG = "daylove.main"
+    var token: String? = ""
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        context = applicationContext
+        Token.registerContext(applicationContext)
+        super.onCreate(savedInstanceState)
+
+        //Check if token exists
+        val securityToken = Token.get()
+        if (securityToken == "") {
+            startActivity(Intent(this@MainActivity, LoginActivity::class.java))
+            return
+        } else {
+            token = securityToken
+        }
+
+
+        setContentView(R.layout.activity_main)
+        val toolbar = findViewById(R.id.toolbar) as Toolbar
+        setSupportActionBar(toolbar)
+
+
+        val fab = findViewById(R.id.fab) as FloatingActionButton
+        fab.setOnClickListener { view: View ->
+            startActivity(Intent(this@MainActivity, CreateActivity::class.java))
+            finish()
+        }
+
+        Glide.get(this)
+                .register(GlideUrl::class.java, InputStream::class.java, OkHttpUrlLoader.Factory(DLHttpClient.client))
+
+
+        loadList()
+
+    }
+
+    fun buttonReEnable() {
+        val btnPrev = findViewById(R.id.nav_prev) as Button
+        btnPrev.setText(R.string.string_nav_prev)
+        btnPrev.isEnabled = true
+        val btnNext = findViewById(R.id.nav_next) as Button
+        btnNext.setText(R.string.string_nav_next)
+        btnNext.isEnabled = true
+    }
+
+    fun goPrev(v: View) {
+        page = page - 1
+        if (page < 1) {
+            page = 1
+        }
+        val btnPrev = findViewById(R.id.nav_prev) as Button
+        btnPrev.setText(R.string.string_loading)
+        btnPrev.isEnabled = false
+        loadList(page)
+    }
+
+    fun goNext(v: View) {
+        page = page + 1
+        val btnNext = findViewById(R.id.nav_next) as Button
+        btnNext.setText(R.string.string_loading)
+        btnNext.isEnabled = false
+        loadList(page)
+    }
+
+    @JvmOverloads fun loadList(page: Int? = 1) {
+        val listURL = ApiBase.getListUrl(token)
+        val params = HashMap<String, String>()
+        params.put("page", Integer.toString(page!!))
+        Log.d(LOG_TAG, "Try to load page: " + page)
+        val jParams = JSONObject(params)
+
+        try {
+            DLHttpClient.doPost(listURL, jParams.toString(), object : Callback {
+                override fun onFailure(call: Call, e: IOException) {
+                    val handler = Handler(Looper.getMainLooper())
+                    handler.post { buttonReEnable() }
+                    e.printStackTrace()
+                }
+
+                @Throws(IOException::class)
+                override fun onResponse(call: Call, resp: Response) {
+                    Log.d(LOG_TAG, "Response code: " + resp.code())
+                    val handler = Handler(Looper.getMainLooper())
+                    handler.post { buttonReEnable() }
+                    handler.post {
+                        try {
+                            val respBodyString = resp.body().string()
+                            Log.d(LOG_TAG, "Response body: " + respBodyString)
+                            val response = JSONObject(respBodyString)
+                            if (resp.code() != 200) {
+                                val additionMsg = response.getString("msg")
+                                Handler(Looper.getMainLooper()).post { Toast.makeText(context, "Can not load data, please re login then try again" + additionMsg, Toast.LENGTH_SHORT).show() }
+                            }
+
+                            val data = response.getJSONArray("data")
+                            val len = data.length()
+                            val ll = findViewById(R.id.mainLinearLayout) as LinearLayout
+                            ll.removeAllViews()
+                            for (i in 0..len - 1) {
+                                val line = data.getJSONObject(i)
+                                Log.d(LOG_TAG, line.toString())
+                                val wv = WebView(context)
+                                val content = "[" + line.getString("PublishTime") + "]<br />" + line.getString("Content")
+                                Log.d(LOG_TAG, content)
+                                wv.loadData(content, "text/html;charset=UTF-8", "UTF-8")
+                                ll.addView(wv)
+                                val imageList = line.getJSONArray("Images")
+                                val imagesNums = imageList.length()
+                                for (j in 0..imagesNums - 1) {
+                                    val iv = ImageView(context)
+
+                                    ll.addView(iv)
+                                    val imageUrl = imageList.getString(j) + "?act=resize&x=1024"
+                                    Log.d(LOG_TAG, "Try to display image: " + imageUrl)
+                                    Glide.with(context).load(imageUrl).into(iv)
+                                }
+                            }
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                        }
+                    }
+                }
+            })
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        menuInflater.inflate(R.menu.menu_main, menu)
+        if (token == "") {
+            val signInMenu = menu.findItem(R.id.action_signin)
+            signInMenu.isVisible = true
+        } else {
+            val logoutMenu = menu.findItem(R.id.action_logout)
+            logoutMenu.isVisible = true
+        }
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        val id = item.itemId
+
+
+        if (id == R.id.action_settings) {
+            return true
+        }
+        if (id == R.id.action_signin) {
+            startActivity(Intent(this@MainActivity, LoginActivity::class.java))
+            return true
+        }
+        if (id == R.id.action_logout) {
+            Token.clear()
+            startActivity(Intent(this@MainActivity, LoginActivity::class.java))
+            return true
+        }
+        if (id == R.id.action_reload_list) {
+            loadList()
+            return true
+        }
+
+        return super.onOptionsItemSelected(item)
+    }
+
+}
