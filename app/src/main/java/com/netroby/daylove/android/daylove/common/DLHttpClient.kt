@@ -8,20 +8,12 @@ object DLHttpClient {
 
     private val JSON = MediaType.parse("application/json;charset=utf-8")
     val client: OkHttpClient? = OkHttpClient.Builder()
-                .connectionPool(ConnectionPool(10, 60, TimeUnit.SECONDS))
+                .connectionPool(ConnectionPool(5, 300, TimeUnit.SECONDS))
                 .build()
 
     @Throws(IOException::class)
     fun preparePool()  {
-        client!!.newCall(Request.Builder().url(ApiBase.API_BASE_URL).head().build()).enqueue(object: Callback {
-            override fun onFailure(call: Call?, e: IOException?) {
-
-            }
-            override fun onResponse(call: Call?, response: Response?) {
-
-            }
-
-        })
+        client!!.newCall(Request.Builder().url(ApiBase.API_BASE_URL).head().build()).execute()
     }
 
     @Throws(IOException::class)
