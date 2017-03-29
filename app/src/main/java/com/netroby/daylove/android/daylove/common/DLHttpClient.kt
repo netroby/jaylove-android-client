@@ -1,15 +1,8 @@
 package com.netroby.daylove.android.daylove.common
 
+import okhttp3.*
 import java.io.IOException
 import java.util.concurrent.TimeUnit
-
-import okhttp3.Callback
-import okhttp3.ConnectionPool
-import okhttp3.MediaType
-import okhttp3.MultipartBody
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import okhttp3.RequestBody
 
 object DLHttpClient {
 
@@ -20,7 +13,15 @@ object DLHttpClient {
 
     @Throws(IOException::class)
     fun preparePool()  {
-        client!!.newCall(Request.Builder().url(ApiBase.API_BASE_URL).head().build())
+        client!!.newCall(Request.Builder().url(ApiBase.API_BASE_URL).head().build()).enqueue(object: Callback {
+            override fun onFailure(call: Call?, e: IOException?) {
+
+            }
+            override fun onResponse(call: Call?, response: Response?) {
+
+            }
+
+        })
     }
 
     @Throws(IOException::class)
