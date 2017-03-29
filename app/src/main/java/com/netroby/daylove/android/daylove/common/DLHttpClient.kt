@@ -8,7 +8,7 @@ object DLHttpClient {
 
     private val JSON = MediaType.parse("application/json;charset=utf-8")
     val client: OkHttpClient? = OkHttpClient.Builder()
-                .connectionPool(ConnectionPool(5, 300, TimeUnit.SECONDS))
+                .connectionPool(ConnectionPool())
                 .build()
 
     @Throws(IOException::class)
