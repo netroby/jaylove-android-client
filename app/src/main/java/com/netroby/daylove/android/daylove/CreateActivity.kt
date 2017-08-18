@@ -153,6 +153,8 @@ class CreateActivity : AppCompatActivity() {
                     }
                 }
             } catch (e: Exception) {
+                val handler = Handler(Looper.getMainLooper())
+                handler.post { Toast.makeText(applicationContext, "Can not load image" + e.message, Toast.LENGTH_SHORT).show() }
                 e.printStackTrace()
             }
 
