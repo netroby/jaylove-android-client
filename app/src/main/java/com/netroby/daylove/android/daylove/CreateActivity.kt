@@ -3,10 +3,8 @@ package com.netroby.daylove.android.daylove
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.database.Cursor
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -18,25 +16,20 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.Toast
-
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.animation.GlideAnimation
 import com.bumptech.glide.request.target.SimpleTarget
 import com.netroby.daylove.android.daylove.common.ApiBase
 import com.netroby.daylove.android.daylove.common.DLHttpClient
 import com.netroby.daylove.android.daylove.common.Token
-
-import org.json.JSONArray
-import org.json.JSONObject
-
-import java.io.ByteArrayOutputStream
-import java.io.IOException
-import java.util.ArrayList
-import java.util.HashMap
-
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.Response
+import org.json.JSONArray
+import org.json.JSONObject
+import java.io.ByteArrayOutputStream
+import java.io.IOException
+import java.util.*
 
 class CreateActivity : AppCompatActivity() {
     private var uploadedImageUrl = ""

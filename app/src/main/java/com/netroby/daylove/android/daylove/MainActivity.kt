@@ -5,7 +5,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.support.design.widget.FloatingActionButton
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
 import android.util.Log
@@ -17,24 +16,19 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.Toast
-
 import com.bumptech.glide.Glide
 import com.bumptech.glide.integration.okhttp3.OkHttpUrlLoader
 import com.bumptech.glide.load.model.GlideUrl
 import com.netroby.daylove.android.daylove.common.ApiBase
 import com.netroby.daylove.android.daylove.common.DLHttpClient
 import com.netroby.daylove.android.daylove.common.Token
-
-import org.json.JSONArray
-import org.json.JSONObject
-
-import java.io.IOException
-import java.io.InputStream
-import java.util.HashMap
-
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.Response
+import org.json.JSONObject
+import java.io.IOException
+import java.io.InputStream
+import java.util.*
 
 
 class MainActivity : AppCompatActivity() {
