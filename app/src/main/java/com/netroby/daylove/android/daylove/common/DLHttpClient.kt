@@ -2,7 +2,7 @@ package com.netroby.daylove.android.daylove.common
 
 import okhttp3.*
 import java.io.IOException
-import java.util.concurrent.TimeUnit
+
 
 object DLHttpClient {
 
@@ -36,11 +36,11 @@ object DLHttpClient {
 
     @Throws(IOException::class)
     fun fileUpload(url: String, fileUri: String, imageByteArray: ByteArray, callback: Callback) {
-        val MEDIA_TYPE_JPG = MediaType.parse("image/jpg")
+        val mediaType = MediaType.parse("image/jpg")
 
         val requestBody = MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
-                .addFormDataPart("uploadfile", fileUri, RequestBody.create(MEDIA_TYPE_JPG, imageByteArray))
+                .addFormDataPart("uploadfile", fileUri, RequestBody.create(mediaType, imageByteArray))
                 .build()
         val request = Request.Builder()
                 .url(url)

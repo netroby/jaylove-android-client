@@ -43,18 +43,17 @@ class LoginActivity : AppCompatActivity() {
         Token.registerContext(applicationContext)
 
         // Set up the login form.
-        musernameView = findViewById(R.id.username) as AutoCompleteTextView
+        musernameView = findViewById(R.id.username)
 
-        mPasswordView = findViewById(R.id.password) as EditText
+        mPasswordView = findViewById(R.id.password)
         mPasswordView!!.setOnEditorActionListener { _, id: Int, _ ->
             if (id == R.id.login || id == EditorInfo.IME_NULL) {
                 attemptLogin()
-                true
             }
             false
         }
 
-        val musernameSignInButton = findViewById(R.id.username_sign_in_button) as Button
+        val musernameSignInButton = findViewById<Button>(R.id.username_sign_in_button)
         musernameSignInButton.setOnClickListener { _ -> attemptLogin() }
 
     }
@@ -102,12 +101,12 @@ class LoginActivity : AppCompatActivity() {
         } else {
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
-            Log.d(LOG_TAG, "Username:" + username)
-            Log.d(LOG_TAG, "Password:" + password)
+            Log.d(LOG_TAG, "Username:$username")
+            Log.d(LOG_TAG, "Password:$password")
             val loginURL = ApiBase.loginUrl
             val paramsMap = HashMap<String, String>()
-            paramsMap.put("username", username)
-            paramsMap.put("password", password)
+            paramsMap["username"] = username
+            paramsMap["password"] = password
             val jParams = JSONObject(paramsMap)
             try {
                 DLHttpClient.doPost(loginURL, jParams.toString(), object : Callback {
@@ -130,7 +129,7 @@ class LoginActivity : AppCompatActivity() {
                                 } else {
 
                                     val respBodyString = resp.body().string()
-                                    Log.d(LOG_TAG, "Response body String : " + respBodyString)
+                                    Log.d(LOG_TAG, "Response body String : $respBodyString")
                                     val response = JSONObject(respBodyString)
                                     val token = response.getString("token")
                                     Token.set(token)
@@ -157,18 +156,16 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun isusernameValid(username: String): Boolean {
-        //TODO: Replace this with your own logic
         return username.isNotEmpty()
     }
 
     private fun isPasswordValid(password: String): Boolean {
-        //TODO: Replace this with your own logic
         return password.length > 4
     }
 
     companion object {
 
-        val LOG_TAG = "daylove.login"
+        const val LOG_TAG = "daylove.login"
     }
 
 }

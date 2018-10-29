@@ -60,18 +60,18 @@ class CreateActivity : AppCompatActivity() {
 
     }
 
-    fun handleSendText(intent: Intent) {
+    private fun handleSendText(intent: Intent) {
         val sharedText = intent.getStringExtra(Intent.EXTRA_TEXT)
         if (sharedText != null) {
             val handler = Handler(Looper.getMainLooper())
             handler.post {
-                val contentEditText = findViewById(R.id.editText) as EditText
+                val contentEditText = findViewById<EditText>(R.id.editText)
                 contentEditText.setText(sharedText)
             }
         }
     }
 
-    fun selectImage(v: View) {
+    fun selectImage() {
         startActivityForResult(Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI), 54)
     }
 
@@ -89,7 +89,7 @@ class CreateActivity : AppCompatActivity() {
                         val picPath = cursor.getString(colIndex)
                         cursor.close()
                         Handler(Looper.getMainLooper()).post {
-                            val imageView = findViewById(R.id.imageView) as ImageView
+                            val imageView = findViewById<ImageView>(R.id.imageView)
                             imageView.visibility = View.VISIBLE
                             imageView.layoutParams.height = 250
                             imageView.requestLayout()
@@ -98,8 +98,8 @@ class CreateActivity : AppCompatActivity() {
                         //Make toast
                         Handler(Looper.getMainLooper()).post { Toast.makeText(context, "Begin to upload image , please wait", Toast.LENGTH_SHORT).show() }
                         val url = ApiBase.getFileUploadUrl(token)
-                        Log.d(LOG_TAG, "Upload to url" + url)
-                        var uploadTarget = object: SimpleTarget<Bitmap>(1024, 768) {
+                        Log.d(LOG_TAG, "Upload to url$url")
+                        val uploadTarget = object: SimpleTarget<Bitmap>(1024, 768) {
                             override fun onResourceReady(resource: Bitmap?, glideAnimation: GlideAnimation<in Bitmap>?) {
                                 // Do something with bitmap here.
                                 val stream = ByteArrayOutputStream()
@@ -154,19 +154,19 @@ class CreateActivity : AppCompatActivity() {
         }
     }
 
-    fun sendPost(v: View) {
-        val sendBtn = findViewById(R.id.button) as Button
+    fun sendPost() {
+        val sendBtn = findViewById<Button>(R.id.button)
         sendBtn.setText(R.string.create_submit_sending)
         sendBtn.isEnabled = false
-        val contentEditText = findViewById(R.id.editText) as EditText
+        val contentEditText = findViewById<EditText>(R.id.editText)
         val content = contentEditText.text.toString()
         val loginURL = ApiBase.getSaveBlogAddUrl(token)
         val paramsMap = HashMap<String, String>()
-        paramsMap.put("content", content.replace("\r?\n".toRegex(), "<br />"))
+        paramsMap["content"] = content.replace("\r?\n".toRegex(), "<br />")
         val list = ArrayList<String>()
         list.add(uploadedImageUrl)
         val imagesJsonString = JSONArray(list).toString()
-        paramsMap.put("images", imagesJsonString)
+        paramsMap["images"] = imagesJsonString
         val jParams = JSONObject(paramsMap)
 
         try {
@@ -209,6 +209,6 @@ class CreateActivity : AppCompatActivity() {
     }
 
     companion object {
-        private val LOG_TAG = "daylove.create"
+        private const val LOG_TAG = "daylove.create"
     }
 }

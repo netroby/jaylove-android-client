@@ -10,7 +10,6 @@ import android.support.v7.widget.Toolbar
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-import android.view.View
 import android.webkit.WebView
 import android.widget.Button
 import android.widget.ImageView
@@ -32,10 +31,13 @@ import java.util.*
 
 
 class MainActivity : AppCompatActivity() {
+    companion object {
+        const val LOG_TAG = "daylove.main"
+    }
+
     var context: Context? = null
-    var page = 1
-    val LOG_TAG = "daylove.main"
-    var token: String? = ""
+    private var page = 1
+    private var token: String? = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         DLHttpClient.preparePool()
@@ -54,7 +56,7 @@ class MainActivity : AppCompatActivity() {
 
 
         setContentView(R.layout.activity_main)
-        val toolbar = findViewById(R.id.toolbar) as Toolbar
+        val toolbar = findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
 
         Glide.get(this)
@@ -65,34 +67,34 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    fun goCreateActivity(v: View) {
+    fun goCreateActivity() {
         startActivity(Intent(this@MainActivity, CreateActivity::class.java))
         finish()
     }
 
     fun buttonReEnable() {
-        val btnPrev = findViewById(R.id.nav_prev) as Button
+        val btnPrev = findViewById<Button>(R.id.nav_prev)
         btnPrev.setText(R.string.string_nav_prev)
         btnPrev.isEnabled = true
-        val btnNext = findViewById(R.id.nav_next) as Button
+        val btnNext = findViewById<Button>(R.id.nav_next)
         btnNext.setText(R.string.string_nav_next)
         btnNext.isEnabled = true
     }
 
-    fun goPrev(v: View) {
-        page = page - 1
+    fun goPrev() {
+        page -= 1
         if (page < 1) {
             page = 1
         }
-        val btnPrev = findViewById(R.id.nav_prev) as Button
+        val btnPrev = findViewById<Button>(R.id.nav_prev)
         btnPrev.setText(R.string.string_loading)
         btnPrev.isEnabled = false
         loadList(page)
     }
 
-    fun goNext(v: View) {
-        page = page + 1
-        val btnNext = findViewById(R.id.nav_next) as Button
+    fun goNext() {
+        page += 1
+        val btnNext = findViewById<Button>(R.id.nav_next)
         btnNext.setText(R.string.string_loading)
         btnNext.isEnabled = false
         loadList(page)
@@ -101,8 +103,8 @@ class MainActivity : AppCompatActivity() {
     @JvmOverloads fun loadList(page: Int? = 1) {
         val listURL = ApiBase.getListUrl(token)
         val params = HashMap<String, String>()
-        params.put("page", Integer.toString(page!!))
-        Log.d(LOG_TAG, "Try to load page: " + page)
+        params["page"] = Integer.toString(page!!)
+        Log.d(LOG_TAG, "Try to load page: $page")
         val jParams = JSONObject(params)
 
         try {
@@ -121,18 +123,18 @@ class MainActivity : AppCompatActivity() {
                     handler.post {
                         try {
                             val respBodyString = resp.body().string()
-                            Log.d(LOG_TAG, "Response body: " + respBodyString)
+                            Log.d(LOG_TAG, "Response body: $respBodyString")
                             val response = JSONObject(respBodyString)
                             if (resp.code() != 200) {
                                 val additionMsg = response.getString("msg")
-                                Handler(Looper.getMainLooper()).post { Toast.makeText(context, "Can not load data, please re login then try again" + additionMsg, Toast.LENGTH_SHORT).show() }
+                                Handler(Looper.getMainLooper()).post { Toast.makeText(context, "Can not load data, please re login then try again$additionMsg", Toast.LENGTH_SHORT).show() }
                             }
 
                             val data = response.getJSONArray("data")
                             val len = data.length()
-                            val ll = findViewById(R.id.mainLinearLayout) as LinearLayout
+                            val ll = findViewById<LinearLayout>(R.id.mainLinearLayout)
                             ll.removeAllViews()
-                            for (i in 0..len - 1) {
+                            for (i in 0 until len) {
                                 val line = data.getJSONObject(i)
                                 Log.d(LOG_TAG, line.toString())
                                 val wv = WebView(context)
@@ -142,12 +144,12 @@ class MainActivity : AppCompatActivity() {
                                 ll.addView(wv)
                                 val imageList = line.getJSONArray("Images")
                                 val imagesNums = imageList.length()
-                                for (j in 0..imagesNums - 1) {
+                                for (j in 0 until imagesNums) {
                                     val iv = ImageView(context)
 
                                     ll.addView(iv)
                                     val imageUrl = imageList.getString(j) + "?act=resize&x=1024"
-                                    Log.d(LOG_TAG, "Try to display image: " + imageUrl)
+                                    Log.d(LOG_TAG, "Try to display image: $imageUrl")
                                     Glide.with(context).load(imageUrl).into(iv)
                                 }
                             }
