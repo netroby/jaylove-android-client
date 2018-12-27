@@ -33,7 +33,7 @@ import java.util.*
 
 class CreateActivity : AppCompatActivity() {
     private var uploadedImageUrl = ""
-    private var token: String? = null
+    private var token: String = ""
     private var context: Context? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -119,7 +119,7 @@ class CreateActivity : AppCompatActivity() {
                                                     handler.post { Toast.makeText(applicationContext, "Image uploaded Failed, try to logout then login", Toast.LENGTH_SHORT).show() }
                                                     return
                                                 }
-                                                val resp = JSONObject(response.body()!!.string())
+                                                val resp = JSONObject(response.body()?.string())
                                                 uploadedImageUrl = resp.getString("url")
                                                 handler.post { Toast.makeText(applicationContext, "Image uploaded success, then you can send post", Toast.LENGTH_SHORT).show() }
                                             } catch (e: Exception) {
@@ -154,7 +154,7 @@ class CreateActivity : AppCompatActivity() {
         }
     }
 
-    fun sendPost() {
+    fun sendPost(v: View) {
         val sendBtn = findViewById<Button>(R.id.button)
         sendBtn.setText(R.string.create_submit_sending)
         sendBtn.isEnabled = false
@@ -187,7 +187,7 @@ class CreateActivity : AppCompatActivity() {
                             if (resp.code() != 200) {
                                 Handler(Looper.getMainLooper()).post { Toast.makeText(context, "Can not post, logout then login again !", Toast.LENGTH_SHORT).show() }
                             }
-                            val response = JSONObject(resp.body()!!.string())
+                            val response = JSONObject(resp.body()?.string())
                             val msg = response.getString("msg")
                             Toast.makeText(applicationContext, msg, Toast.LENGTH_SHORT).show()
                             startActivity(Intent(applicationContext, MainActivity::class.java))

@@ -10,6 +10,7 @@ import android.support.v7.widget.Toolbar
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.webkit.WebView
 import android.widget.Button
 import android.widget.ImageView
@@ -37,7 +38,7 @@ class MainActivity : AppCompatActivity() {
 
     var context: Context? = null
     private var page = 1
-    private var token: String? = ""
+    private var token: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         DLHttpClient.preparePool()
@@ -67,7 +68,7 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    fun goCreateActivity() {
+    fun goCreateActivity(v: View) {
         startActivity(Intent(this@MainActivity, CreateActivity::class.java))
         finish()
     }
@@ -81,7 +82,7 @@ class MainActivity : AppCompatActivity() {
         btnNext.isEnabled = true
     }
 
-    fun goPrev() {
+    fun goPrev(v: View) {
         page -= 1
         if (page < 1) {
             page = 1
@@ -92,7 +93,7 @@ class MainActivity : AppCompatActivity() {
         loadList(page)
     }
 
-    fun goNext() {
+    fun goNext(v: View) {
         page += 1
         val btnNext = findViewById<Button>(R.id.nav_next)
         btnNext.setText(R.string.string_loading)
@@ -100,10 +101,10 @@ class MainActivity : AppCompatActivity() {
         loadList(page)
     }
 
-    @JvmOverloads fun loadList(page: Int? = 1) {
+    @JvmOverloads fun loadList(page: Int = 1) {
         val listURL = ApiBase.getListUrl(token)
         val params = HashMap<String, String>()
-        params["page"] = Integer.toString(page!!)
+        params["page"] = Integer.toString(page)
         Log.d(LOG_TAG, "Try to load page: $page")
         val jParams = JSONObject(params)
 
@@ -122,7 +123,7 @@ class MainActivity : AppCompatActivity() {
                     handler.post { buttonReEnable() }
                     handler.post {
                         try {
-                            val respBodyString = resp.body()!!.string()
+                            val respBodyString = resp.body()?.string()
                             Log.d(LOG_TAG, "Response body: $respBodyString")
                             val response = JSONObject(respBodyString)
                             if (resp.code() != 200) {

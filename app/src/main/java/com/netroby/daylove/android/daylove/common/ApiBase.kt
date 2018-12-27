@@ -7,15 +7,15 @@ object ApiBase {
     val loginUrl: String
         get() = "$API_BASE_URL/login"
 
-    fun getSaveBlogAddUrl(Token: String?): String {
+    fun getSaveBlogAddUrl(Token: String): String {
         return "$API_BASE_URL/save-blog-add?token=$Token"
     }
 
-    fun getListUrl(Token: String?): String {
+    fun getListUrl(Token: String): String {
         return "$API_BASE_URL/list?token=$Token"
     }
 
-    fun getFileUploadUrl(Token: String?): String {
+    fun getFileUploadUrl(Token: String): String {
         return "$API_BASE_URL/file-upload?token=$Token"
     }
 }

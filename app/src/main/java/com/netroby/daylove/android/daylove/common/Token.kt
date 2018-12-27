@@ -21,8 +21,8 @@ object Token {
         context = ctx
     }
 
-    fun get(): String? {
-        return getSetting()?.getString("token", "")
+    fun get(): String {
+        return getSetting()?.getString("token", "") as String
     }
 
     fun set(token: String): Boolean {
