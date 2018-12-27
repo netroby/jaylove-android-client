@@ -128,7 +128,7 @@ class LoginActivity : AppCompatActivity() {
                                     mhandler.post { Toast.makeText(applicationContext, "Login failed, pleas try again", Toast.LENGTH_SHORT).show() }
                                 } else {
 
-                                    val respBodyString = resp.body().string()
+                                    val respBodyString = resp.body()!!.string()
                                     Log.d(LOG_TAG, "Response body String : $respBodyString")
                                     val response = JSONObject(respBodyString)
                                     val token = response.getString("token")

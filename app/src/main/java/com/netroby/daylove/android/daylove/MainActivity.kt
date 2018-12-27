@@ -122,7 +122,7 @@ class MainActivity : AppCompatActivity() {
                     handler.post { buttonReEnable() }
                     handler.post {
                         try {
-                            val respBodyString = resp.body().string()
+                            val respBodyString = resp.body()!!.string()
                             Log.d(LOG_TAG, "Response body: $respBodyString")
                             val response = JSONObject(respBodyString)
                             if (resp.code() != 200) {
