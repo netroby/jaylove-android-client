@@ -12,10 +12,7 @@ import android.provider.MediaStore
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.View
-import android.widget.Button
-import android.widget.EditText
-import android.widget.ImageView
-import android.widget.Toast
+import android.widget.*
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.animation.GlideAnimation
 import com.bumptech.glide.request.target.SimpleTarget
@@ -71,7 +68,10 @@ class CreateActivity : AppCompatActivity() {
         }
     }
 
-    fun selectImage() {
+    fun selectImage(v: View) {
+
+        val container = findViewById<TextView>(R.id.uploadResultContainer)
+        container.clearComposingText()
         startActivityForResult(Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI), 54)
     }
 
@@ -96,7 +96,11 @@ class CreateActivity : AppCompatActivity() {
                             imageView.setImageBitmap(BitmapFactory.decodeFile(picPath))
                         }
                         //Make toast
-                        Handler(Looper.getMainLooper()).post { Toast.makeText(context, "Begin to upload image , please wait", Toast.LENGTH_SHORT).show() }
+                        Handler(Looper.getMainLooper()).post {
+
+                            val container = findViewById<TextView>(R.id.uploadResultContainer)
+                            container.setText(R.string.image_uploading)
+                            Toast.makeText(context, "Begin to upload image , please wait", Toast.LENGTH_SHORT).show() }
                         val url = ApiBase.getFileUploadUrl(token)
                         Log.d(LOG_TAG, "Upload to url$url")
                         val uploadTarget = object: SimpleTarget<Bitmap>(1024, 768) {
@@ -121,7 +125,10 @@ class CreateActivity : AppCompatActivity() {
                                                 }
                                                 val resp = JSONObject(response.body()?.string())
                                                 uploadedImageUrl = resp.getString("url")
-                                                handler.post { Toast.makeText(applicationContext, "Image uploaded success, then you can send post", Toast.LENGTH_SHORT).show() }
+                                                handler.post {
+                                                    val container = findViewById<TextView>(R.id.uploadResultContainer)
+                                                    container.setText(R.string.image_success_uploaded)
+                                                    Toast.makeText(applicationContext, "Image uploaded success, then you can send post", Toast.LENGTH_SHORT).show() }
                                             } catch (e: Exception) {
                                                 e.printStackTrace()
                                             }

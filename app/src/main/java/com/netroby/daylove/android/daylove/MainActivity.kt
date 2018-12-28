@@ -1,10 +1,13 @@
 package com.netroby.daylove.android.daylove
 
+import android.Manifest
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.support.v4.app.ActivityCompat
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
 import android.util.Log
@@ -37,10 +40,19 @@ class MainActivity : AppCompatActivity() {
     }
 
     var context: Context? = null
+    var MY_PERMISSIONS_STORAGE = 0;
     private var page = 1
     private var token: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        val permission = ActivityCompat.checkSelfPermission(this,
+        Manifest.permission.READ_EXTERNAL_STORAGE)
+
+        if (permission != PackageManager.PERMISSION_GRANTED) {
+            // We don't have permission so prompt the u
+            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE), MY_PERMISSIONS_STORAGE);
+        }
+
         DLHttpClient.preparePool()
         context = applicationContext
         Token.registerContext(applicationContext)
@@ -67,6 +79,8 @@ class MainActivity : AppCompatActivity() {
         loadList()
 
     }
+
+
 
     fun goCreateActivity(v: View) {
         startActivity(Intent(this@MainActivity, CreateActivity::class.java))

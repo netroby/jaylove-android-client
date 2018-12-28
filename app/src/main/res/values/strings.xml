@@ -21,4 +21,6 @@
     <string name="string_nav_next">Next page</string>
     <string name="string_btn_publish">+</string>
     <string name="string_loading">Loading\.\.\.</string>
+    <string name="image_success_uploaded">Image uploaded</string>
+    <string name="image_uploading">uploading</string>
 </resources>
