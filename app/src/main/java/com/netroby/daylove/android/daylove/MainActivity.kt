@@ -40,7 +40,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     var context: Context? = null
-    var MY_PERMISSIONS_STORAGE = 0;
+    var MY_PERMISSIONS_STORAGE = 0
     private var page = 1
     private var token: String = ""
 
