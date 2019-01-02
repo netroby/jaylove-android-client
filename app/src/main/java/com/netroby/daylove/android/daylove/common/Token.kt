@@ -8,34 +8,18 @@ import android.content.SharedPreferences
  */
 
 object Token {
-
-    private var context: Context? = null
-
-    private val SHARED_SETTING_TAG = "daylove.config"
-
-    fun getSetting() : SharedPreferences? {
-        return context?.getSharedPreferences(SHARED_SETTING_TAG, 0)
-    }
-
-    fun registerContext(ctx: Context) {
-        context = ctx
-    }
-
+    private const val KEY: String = "token"
     fun get(): String {
-        return getSetting()?.getString("token", "") as String
+        return LocalStorage.get(KEY)
     }
 
     fun set(token: String): Boolean {
-        val edit = getSetting()?.edit()
-        edit?.putString("token", token)
-        edit?.apply()
+        LocalStorage.set(KEY, token)
         return true
     }
 
     fun clear(): Boolean {
-        val edit = getSetting()?.edit()
-        edit?.putString("token", "")
-        edit?.apply()
+        LocalStorage.clear(KEY)
         return true
     }
 }
