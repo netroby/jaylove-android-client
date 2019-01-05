@@ -3,10 +3,6 @@ package com.netroby.daylove.android.daylove.common
 import android.content.Context
 import android.content.SharedPreferences
 
-/**
- * Created by huzhifeng on 16-11-19.
- */
-
 object LocalStorage {
 
     private var context: Context? = null

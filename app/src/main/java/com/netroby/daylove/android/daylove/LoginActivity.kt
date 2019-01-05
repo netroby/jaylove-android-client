@@ -16,6 +16,7 @@ import android.widget.Toast
 
 import com.netroby.daylove.android.daylove.common.ApiBase
 import com.netroby.daylove.android.daylove.common.DLHttpClient
+import com.netroby.daylove.android.daylove.common.LocalStorage
 import com.netroby.daylove.android.daylove.common.Token
 
 import org.json.JSONObject
@@ -40,7 +41,7 @@ class LoginActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
-        Token.registerContext(applicationContext)
+        LocalStorage.registerContext(applicationContext) //设置LocalStorage context
 
         // Set up the login form.
         musernameView = findViewById(R.id.username)
