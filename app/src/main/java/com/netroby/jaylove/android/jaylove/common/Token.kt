@@ -1,4 +1,4 @@
-package com.netroby.daylove.android.daylove.common
+package com.netroby.jaylove.android.jaylove.common
 
 import android.content.Context
 import android.content.SharedPreferences

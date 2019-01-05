@@ -1,4 +1,4 @@
-package com.netroby.daylove.android.daylove
+package com.netroby.jaylove.android.jaylove
 
 import android.app.Activity
 import android.content.Context
@@ -16,9 +16,10 @@ import android.widget.*
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.animation.GlideAnimation
 import com.bumptech.glide.request.target.SimpleTarget
-import com.netroby.daylove.android.daylove.common.ApiBase
-import com.netroby.daylove.android.daylove.common.DLHttpClient
-import com.netroby.daylove.android.daylove.common.Token
+import com.netroby.jaylove.android.jaylove.common.ApiBase
+import com.netroby.jaylove.android.jaylove.common.DLHttpClient
+import com.netroby.jaylove.android.jaylove.common.LocalStorage
+import com.netroby.jaylove.android.jaylove.common.Token
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.Response
@@ -46,7 +47,7 @@ class CreateActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_create)
         //Check if token exists
-        Token.registerContext(applicationContext)
+        LocalStorage.registerContext(applicationContext)
         val securityToken = Token.get()
         if (securityToken == "") {
             startActivity(Intent(this@CreateActivity, LoginActivity::class.java))
@@ -216,6 +217,6 @@ class CreateActivity : AppCompatActivity() {
     }
 
     companion object {
-        private const val LOG_TAG = "daylove.create"
+        private const val LOG_TAG = "jaylove.create"
     }
 }

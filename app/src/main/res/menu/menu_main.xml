@@ -1,7 +1,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="com.netroby.daylove.android.daylove.MainActivity">
+    tools:context="com.netroby.jaylove.android.jaylove.MainActivity">
     <item android:title="Reload"
         android:id="@+id/action_reload_list"/>
     <item

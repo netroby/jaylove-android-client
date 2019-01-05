@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.netroby.daylove.android.daylove">
+    package="com.netroby.jaylove.android.jaylove">
 
     <!-- To auto-complete the email text field in the login form with the user's emails -->
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
@@ -29,7 +29,7 @@
             android:name=".LoginActivity"
             android:label="@string/title_activity_login" />
         <activity android:name=".CreateActivity"
-            android:label="Daylove Create">
+            android:label="jaylove Create">
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
                 <category android:name="android.intent.category.DEFAULT" />

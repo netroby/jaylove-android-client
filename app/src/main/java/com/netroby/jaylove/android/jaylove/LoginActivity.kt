@@ -1,4 +1,4 @@
-package com.netroby.daylove.android.daylove
+package com.netroby.jaylove.android.jaylove
 
 import android.content.Intent
 import android.os.Bundle
@@ -14,10 +14,10 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 
-import com.netroby.daylove.android.daylove.common.ApiBase
-import com.netroby.daylove.android.daylove.common.DLHttpClient
-import com.netroby.daylove.android.daylove.common.LocalStorage
-import com.netroby.daylove.android.daylove.common.Token
+import com.netroby.jaylove.android.jaylove.common.ApiBase
+import com.netroby.jaylove.android.jaylove.common.DLHttpClient
+import com.netroby.jaylove.android.jaylove.common.LocalStorage
+import com.netroby.jaylove.android.jaylove.common.Token
 
 import org.json.JSONObject
 
@@ -166,7 +166,7 @@ class LoginActivity : AppCompatActivity() {
 
     companion object {
 
-        const val LOG_TAG = "daylove.login"
+        const val LOG_TAG = "jaylove.login"
     }
 
 }

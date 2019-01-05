@@ -1,4 +1,4 @@
-package com.netroby.daylove.android.daylove.common
+package com.netroby.jaylove.android.jaylove.common
 
 import android.content.Context
 import android.content.SharedPreferences
@@ -7,7 +7,7 @@ object LocalStorage {
 
     private var context: Context? = null
 
-    private val SHARED_SETTING_TAG = "daylove.config"
+    private val SHARED_SETTING_TAG = "jaylove.config"
 
     fun getSetting() : SharedPreferences? {
         return context?.getSharedPreferences(SHARED_SETTING_TAG, 0)

@@ -1,4 +1,4 @@
-package com.netroby.daylove.android.daylove.common
+package com.netroby.jaylove.android.jaylove.common
 
 import okhttp3.*
 import java.io.IOException

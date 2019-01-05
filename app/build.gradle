@@ -6,7 +6,7 @@ android {
     compileSdkVersion 27
     buildToolsVersion '28.0.3'
     defaultConfig {
-        applicationId "com.netroby.daylove.android.daylove"
+        applicationId "com.netroby.jaylove.android.jaylove"
         minSdkVersion 16
         targetSdkVersion 27
         versionCode 1

@@ -1,4 +1,4 @@
-package com.netroby.daylove.android.daylove
+package com.netroby.jaylove.android.jaylove
 
 import android.Manifest
 import android.content.Context
@@ -22,9 +22,10 @@ import android.widget.Toast
 import com.bumptech.glide.Glide
 import com.bumptech.glide.integration.okhttp3.OkHttpUrlLoader
 import com.bumptech.glide.load.model.GlideUrl
-import com.netroby.daylove.android.daylove.common.ApiBase
-import com.netroby.daylove.android.daylove.common.DLHttpClient
-import com.netroby.daylove.android.daylove.common.Token
+import com.netroby.jaylove.android.jaylove.common.ApiBase
+import com.netroby.jaylove.android.jaylove.common.DLHttpClient
+import com.netroby.jaylove.android.jaylove.common.LocalStorage
+import com.netroby.jaylove.android.jaylove.common.Token
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.Response
@@ -36,7 +37,7 @@ import java.util.*
 
 class MainActivity : AppCompatActivity() {
     companion object {
-        const val LOG_TAG = "daylove.main"
+        const val LOG_TAG = "jaylove.main"
     }
 
     var context: Context? = null
@@ -55,7 +56,7 @@ class MainActivity : AppCompatActivity() {
 
         DLHttpClient.preparePool()
         context = applicationContext
-        Token.registerContext(applicationContext)
+        LocalStorage.registerContext(applicationContext)
         super.onCreate(savedInstanceState)
 
         //Check if token exists
