@@ -47,12 +47,6 @@ class LoginActivity : AppCompatActivity() {
         musernameView = findViewById(R.id.username)
 
         mPasswordView = findViewById(R.id.password)
-        mPasswordView!!.setOnEditorActionListener { _, id: Int, _ ->
-            if (id == R.id.login || id == EditorInfo.IME_NULL) {
-                attemptLogin()
-            }
-            false
-        }
 
         val musernameSignInButton = findViewById<Button>(R.id.username_sign_in_button)
         musernameSignInButton.setOnClickListener { _ -> attemptLogin() }
