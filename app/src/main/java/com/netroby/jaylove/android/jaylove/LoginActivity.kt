@@ -9,10 +9,7 @@ import android.text.TextUtils
 import android.util.Log
 import android.view.View
 import android.view.inputmethod.EditorInfo
-import android.widget.AutoCompleteTextView
-import android.widget.Button
-import android.widget.EditText
-import android.widget.Toast
+import android.widget.*
 
 import com.netroby.jaylove.android.jaylove.common.ApiBase
 import com.netroby.jaylove.android.jaylove.common.DLHttpClient
@@ -67,6 +64,8 @@ class LoginActivity : AppCompatActivity() {
         // Store values at the time of the login attempt.
         val username = musernameView!!.text.toString()
         val password = mPasswordView!!.text.toString()
+        val host = findViewById<EditText>(R.id.host).text.toString()
+        ApiBase.setBaseUrl(host)
 
         var cancel = false
         var focusView: View? = null
@@ -98,7 +97,7 @@ class LoginActivity : AppCompatActivity() {
             // perform the user login attempt.
             Log.d(LOG_TAG, "Username:$username")
             Log.d(LOG_TAG, "Password:$password")
-            val loginURL = ApiBase.loginUrl
+            val loginURL = ApiBase.getLoginUrl()
             val paramsMap = HashMap<String, String>()
             paramsMap["username"] = username
             paramsMap["password"] = password

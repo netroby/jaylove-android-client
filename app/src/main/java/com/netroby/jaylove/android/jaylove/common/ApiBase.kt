@@ -2,20 +2,25 @@ package com.netroby.jaylove.android.jaylove.common
 
 
 object ApiBase {
-    const val API_BASE_URL = "https://love.netroby.com/api"
-    //public static String API_BASE_URL="http://10.0.12.125:8080/api";
-    val loginUrl: String
-        get() = "$API_BASE_URL/login"
+    fun setBaseUrl(s: String) {
+        LocalStorage.set("baseUrl", s)
+    }
+    fun getBaseUrl(): String {
+        return LocalStorage.get("baseUrl") + "/api"
+    }
+    fun getLoginUrl(): String {
+        return getBaseUrl() + "/login"
+    }
 
     fun getSaveBlogAddUrl(Token: String): String {
-        return "$API_BASE_URL/save-blog-add?token=$Token"
+        return getBaseUrl() + "/save-blog-add?token=$Token"
     }
 
     fun getListUrl(Token: String): String {
-        return "$API_BASE_URL/list?token=$Token"
+        return getBaseUrl() + "/list?token=$Token"
     }
 
     fun getFileUploadUrl(Token: String): String {
-        return "$API_BASE_URL/file-upload?token=$Token"
+        return getBaseUrl() + "/file-upload?token=$Token"
     }
 }
