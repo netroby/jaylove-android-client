@@ -6,7 +6,12 @@ object ApiBase {
         LocalStorage.set("baseUrl", s)
     }
     fun getBaseUrl(): String {
-        return LocalStorage.get("baseUrl") + "/api"
+        var baseUrl = LocalStorage.get("baseUrl")
+        if (baseUrl.startsWith("http")) {
+            return baseUrl + "/api"
+        } else {
+            return "http://" + baseUrl + "/api"
+        }
     }
     fun getLoginUrl(): String {
         return getBaseUrl() + "/login"

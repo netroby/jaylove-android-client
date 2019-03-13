@@ -13,6 +13,7 @@ import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.View
 import android.widget.*
+import com.alibaba.fastjson.JSON
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.animation.GlideAnimation
 import com.bumptech.glide.request.target.SimpleTarget
@@ -126,6 +127,7 @@ class CreateActivity : AppCompatActivity() {
                                                 }
                                                 val resp = JSONObject(response.body()?.string())
                                                 uploadedImageUrl = resp.getString("url")
+                                                Log.i(LOG_TAG, "The uploaded image url was:" + uploadedImageUrl)
                                                 handler.post {
                                                     val container = findViewById<TextView>(R.id.uploadResultContainer)
                                                     container.setText(R.string.image_success_uploaded)
@@ -175,8 +177,10 @@ class CreateActivity : AppCompatActivity() {
         list.add(uploadedImageUrl)
         val imagesJsonString = JSONArray(list).toString()
         paramsMap["images"] = imagesJsonString
+        paramsMap["token"] = Token.get()
         val jParams = JSONObject(paramsMap)
 
+        Log.i(LOG_TAG, "The post content preview: " + jParams.toString())
         try {
             DLHttpClient.doPost(loginURL, jParams.toString(), object : Callback {
                 override fun onFailure(call: Call, e: IOException) {
@@ -190,19 +194,21 @@ class CreateActivity : AppCompatActivity() {
                 @Throws(IOException::class)
                 override fun onResponse(call: Call, resp: Response) {
                     val handler = Handler(Looper.getMainLooper())
+
+                    val response = JSONObject(resp.body()?.string())
+                    val msg = response.getString("msg")
+
                     handler.post {
                         try {
                             if (resp.code() != 200) {
                                 Handler(Looper.getMainLooper()).post { Toast.makeText(context, "Can not post, logout then login again !", Toast.LENGTH_SHORT).show() }
                             }
-                            val response = JSONObject(resp.body()?.string())
-                            val msg = response.getString("msg")
                             Toast.makeText(applicationContext, msg, Toast.LENGTH_SHORT).show()
                             startActivity(Intent(applicationContext, MainActivity::class.java))
                         } catch (e: Exception) {
                             Token.clear()
                             Toast.makeText(applicationContext, "Create failed", Toast.LENGTH_SHORT).show()
-                            Log.d(LOG_TAG, e.message)
+                            Log.e(LOG_TAG, e.message.toString())
                             startActivity(Intent(applicationContext, LoginActivity::class.java))
                         }
 

@@ -1,9 +1,12 @@
 package com.netroby.jaylove.android.jaylove
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.support.v4.app.ActivityCompat
 import android.support.v7.app.AppCompatActivity
 import android.text.TextUtils
 import android.util.Log
@@ -35,7 +38,16 @@ class LoginActivity : AppCompatActivity() {
     private var musernameView: AutoCompleteTextView? = null
     private var mPasswordView: EditText? = null
 
+    var MY_PERMISSIONS_STORAGE = 0
+
     override fun onCreate(savedInstanceState: Bundle?) {
+        val permission = ActivityCompat.checkSelfPermission(this,
+                Manifest.permission.READ_EXTERNAL_STORAGE)
+
+        if (permission != PackageManager.PERMISSION_GRANTED) {
+            // We don't have permission so prompt the u
+            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE), MY_PERMISSIONS_STORAGE);
+        }
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
         LocalStorage.registerContext(applicationContext) //设置LocalStorage context
@@ -44,6 +56,12 @@ class LoginActivity : AppCompatActivity() {
         musernameView = findViewById(R.id.username)
 
         mPasswordView = findViewById(R.id.password)
+
+        Log.i(LOG_TAG, "Here is the login form")
+
+        var remHost = LocalStorage.get("baseUrl");
+        Log.i(LOG_TAG, "Remembered host : " + remHost)
+        findViewById<EditText>(R.id.host).setText(remHost)
 
         val musernameSignInButton = findViewById<Button>(R.id.username_sign_in_button)
         musernameSignInButton.setOnClickListener { _ -> attemptLogin() }
@@ -103,9 +121,10 @@ class LoginActivity : AppCompatActivity() {
             paramsMap["password"] = password
             val jParams = JSONObject(paramsMap)
             try {
+                Log.d(LOG_TAG, "Now will post to LoginUrl: " + loginURL)
                 DLHttpClient.doPost(loginURL, jParams.toString(), object : Callback {
                     override fun onFailure(call: Call, e: IOException) {
-                        e.printStackTrace()
+                        Log.e(LOG_TAG, e.message)
                         val handler = Handler(Looper.getMainLooper())
                         handler.post { Toast.makeText(applicationContext, "failed to login", Toast.LENGTH_SHORT).show() }
                     }
@@ -113,6 +132,7 @@ class LoginActivity : AppCompatActivity() {
                     @Throws(IOException::class)
                     override fun onResponse(call: Call, resp: Response) {
                         Log.d(LOG_TAG, "Response code: " + resp.code())
+                        Log.d(LOG_TAG, "Response body: " + resp.body())
                         val handler = Handler(Looper.getMainLooper())
                         handler.post {
                             try {
@@ -142,8 +162,8 @@ class LoginActivity : AppCompatActivity() {
                         }
                     }
                 })
-            } catch (e: IOException) {
-                e.printStackTrace()
+            } catch (e: Exception) {
+                Log.d(LOG_TAG, e.message)
             }
 
         }

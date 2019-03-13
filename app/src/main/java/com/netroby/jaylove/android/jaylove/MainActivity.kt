@@ -19,6 +19,7 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.Toast
+import com.alibaba.fastjson.JSON
 import com.bumptech.glide.Glide
 import com.bumptech.glide.integration.okhttp3.OkHttpUrlLoader
 import com.bumptech.glide.load.model.GlideUrl
@@ -34,7 +35,7 @@ import java.io.IOException
 import java.io.InputStream
 import java.util.*
 
-
+@Suppress("unused")
 class MainActivity : AppCompatActivity() {
     companion object {
         const val LOG_TAG = "jaylove.main"
@@ -123,57 +124,63 @@ class MainActivity : AppCompatActivity() {
         val jParams = JSONObject(params)
 
         try {
-            DLHttpClient.doPost(listURL, jParams.toString(), object : Callback {
-                override fun onFailure(call: Call, e: IOException) {
-                    val handler = Handler(Looper.getMainLooper())
-                    handler.post { buttonReEnable() }
-                    e.printStackTrace()
-                }
 
-                @Throws(IOException::class)
-                override fun onResponse(call: Call, resp: Response) {
-                    Log.d(LOG_TAG, "Response code: " + resp.code())
-                    val handler = Handler(Looper.getMainLooper())
-                    handler.post { buttonReEnable() }
-                    handler.post {
-                        try {
-                            val respBodyString = resp.body()?.string()
-                            Log.d(LOG_TAG, "Response body: $respBodyString")
-                            val response = JSONObject(respBodyString)
-                            if (resp.code() != 200) {
-                                val additionMsg = response.getString("msg")
-                                Handler(Looper.getMainLooper()).post { Toast.makeText(context, "Can not load data, please re login then try again$additionMsg", Toast.LENGTH_SHORT).show() }
-                            }
+                DLHttpClient.doPost(listURL, jParams.toString(), object : Callback {
+                    override fun onFailure(call: Call, e: IOException) {
+                        val handler = Handler(Looper.getMainLooper())
+                        handler.post { buttonReEnable() }
+                        e.printStackTrace()
+                    }
 
-                            val data = response.getJSONArray("data")
-                            val len = data.length()
-                            val ll = findViewById<LinearLayout>(R.id.mainLinearLayout)
-                            ll.removeAllViews()
-                            for (i in 0 until len) {
-                                val line = data.getJSONObject(i)
-                                Log.d(LOG_TAG, line.toString())
-                                val wv = WebView(context)
-                                val content = "[" + line.getString("PublishTime") + "]<br />" + line.getString("Content")
-                                Log.d(LOG_TAG, content)
-                                wv.loadData(content, "text/html;charset=UTF-8", "UTF-8")
-                                ll.addView(wv)
-                                val imageList = line.getJSONArray("Images")
-                                val imagesNums = imageList.length()
-                                for (j in 0 until imagesNums) {
-                                    val iv = ImageView(context)
+                    @Throws(IOException::class)
+                    override fun onResponse(call: Call, resp: Response) {
+                        Log.d(LOG_TAG, "Response code: " + resp.code())
+                        val handler = Handler(Looper.getMainLooper())
+                        handler.post { buttonReEnable() }
 
-                                    ll.addView(iv)
-                                    val imageUrl = imageList.getString(j) + "?act=resize&x=1024"
-                                    Log.d(LOG_TAG, "Try to display image: $imageUrl")
-                                    Glide.with(context).load(imageUrl).into(iv)
+                        val respBodyString = resp.body()?.string()
+                        Log.d(LOG_TAG, "Response body: $respBodyString")
+                        val response = JSONObject(respBodyString)
+
+                        handler.post {
+                            try {
+                                if (resp.code() != 200) {
+                                    val additionMsg = response.getString("msg")
+                                    Handler(Looper.getMainLooper()).post { Toast.makeText(context, "Can not load data, please re login then try again$additionMsg", Toast.LENGTH_SHORT).show() }
                                 }
+
+
+                                val data = response.getJSONArray("data")
+                                val len = data.length()
+                                val ll = findViewById<LinearLayout>(R.id.mainLinearLayout)
+                                ll.removeAllViews()
+                                for (i in 0 until len) {
+                                    val line = data.getJSONObject(i)
+                                    Log.d(LOG_TAG, line.toString())
+                                    val wv = WebView(context)
+                                    val content = "[" + line.getString("publishTime") + "]<br />" + line.getString("content")
+                                    Log.d(LOG_TAG, content)
+                                    wv.loadData(content, "text/html;charset=UTF-8", "UTF-8")
+                                    ll.addView(wv)
+                                    val imageList = JSON.parseArray(line.getString("images"))
+                                    if (imageList != null) {
+                                        val imagesNums = imageList.size
+                                        for (j in 0 until imagesNums) {
+                                            val iv = ImageView(context)
+
+                                            ll.addView(iv)
+                                            val imageUrl = imageList.getString(j) + "?act=resize&x=1024"
+                                            Log.d(LOG_TAG, "Try to display image: $imageUrl")
+                                            Glide.with(context).load(imageUrl).into(iv)
+                                        }
+                                    }
+                                }
+                            } catch (e: Exception) {
+                                Log.e(LOG_TAG, e.toString() + e.stackTrace.asList().toString())
                             }
-                        } catch (e: Exception) {
-                            e.printStackTrace()
                         }
                     }
-                }
-            })
+                })
         } catch (e: Exception) {
             e.printStackTrace()
         }
