@@ -54,7 +54,6 @@ class MainActivity : AppCompatActivity() {
             ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE), MY_PERMISSIONS_STORAGE);
         }
 
-        DLHttpClient.preparePool()
         context = applicationContext
         LocalStorage.registerContext(applicationContext)
         super.onCreate(savedInstanceState)
