@@ -33,6 +33,7 @@ import okhttp3.Response
 import org.json.JSONObject
 import java.io.IOException
 import java.io.InputStream
+import java.text.SimpleDateFormat
 import java.util.*
 
 @Suppress("unused")
@@ -43,7 +44,7 @@ class MainActivity : AppCompatActivity() {
 
     var context: Context? = null
     var MY_PERMISSIONS_STORAGE = 0
-    private var page = 1
+    private var page = 0
     private var token: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -99,8 +100,8 @@ class MainActivity : AppCompatActivity() {
 
     fun goPrev(v: View) {
         page -= 1
-        if (page < 1) {
-            page = 1
+        if (page < 0) {
+            page = 0
         }
         val btnPrev = findViewById<Button>(R.id.nav_prev)
         btnPrev.setText(R.string.string_loading)
@@ -116,10 +117,11 @@ class MainActivity : AppCompatActivity() {
         loadList(page)
     }
 
-    @JvmOverloads fun loadList(page: Int = 1) {
+    @JvmOverloads fun loadList(page: Int = 0) {
         val listURL = ApiBase.getListUrl(token)
         val params = HashMap<String, String>()
         params["page"] = Integer.toString(page)
+        params["token"] = Token.get()
         Log.d(LOG_TAG, "Try to load page: $page")
         val jParams = JSONObject(params)
 
@@ -140,7 +142,7 @@ class MainActivity : AppCompatActivity() {
 
                         val respBodyString = resp.body()?.string()
                         Log.d(LOG_TAG, "Response body: $respBodyString")
-                        val response = JSONObject(respBodyString)
+                        val response = JSON.parseObject(respBodyString)
 
                         handler.post {
                             try {
@@ -151,14 +153,15 @@ class MainActivity : AppCompatActivity() {
 
 
                                 val data = response.getJSONArray("data")
-                                val len = data.length()
+                                val len = data.size
                                 val ll = findViewById<LinearLayout>(R.id.mainLinearLayout)
                                 ll.removeAllViews()
                                 for (i in 0 until len) {
                                     val line = data.getJSONObject(i)
                                     Log.d(LOG_TAG, line.toString())
                                     val wv = WebView(context)
-                                    val content = "[" + line.getString("publishTime") + "]<br />" + line.getString("content")
+                                    val content = "[" + formatUnixTimeStampAsDate(line.getString("publishTime").toLong())  +
+                                            "]<br />" + line.getString("content") + "<br />"
                                     Log.d(LOG_TAG, content)
                                     wv.loadData(content, "text/html;charset=UTF-8", "UTF-8")
                                     ll.addView(wv)
@@ -187,6 +190,9 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+    fun formatUnixTimeStampAsDate(v: Long) : String {
+        return SimpleDateFormat("yyyy-MM-dd hh:mm:ss", Locale.CHINA).format(java.util.Date(v * 1000))
+    }
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
         menuInflater.inflate(R.menu.menu_main, menu)

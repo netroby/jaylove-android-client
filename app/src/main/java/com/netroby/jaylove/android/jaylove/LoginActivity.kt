@@ -1,6 +1,7 @@
 package com.netroby.jaylove.android.jaylove
 
 import android.Manifest
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
@@ -13,6 +14,7 @@ import android.util.Log
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.*
+import com.alibaba.fastjson.JSON
 
 import com.netroby.jaylove.android.jaylove.common.ApiBase
 import com.netroby.jaylove.android.jaylove.common.DLHttpClient
@@ -34,6 +36,8 @@ import okhttp3.Response
 class LoginActivity : AppCompatActivity() {
 
 
+    var context: Context? = null
+
     // UI references.
     private var musernameView: AutoCompleteTextView? = null
     private var mPasswordView: EditText? = null
@@ -48,6 +52,14 @@ class LoginActivity : AppCompatActivity() {
             // We don't have permission so prompt the u
             ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE), MY_PERMISSIONS_STORAGE);
         }
+
+        if (permission != PackageManager.PERMISSION_GRANTED) {
+            // We don't have permission so prompt the u
+            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE), MY_PERMISSIONS_STORAGE);
+        }
+
+        context = applicationContext
+
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
         LocalStorage.registerContext(applicationContext) //设置LocalStorage context
@@ -132,32 +144,28 @@ class LoginActivity : AppCompatActivity() {
                     @Throws(IOException::class)
                     override fun onResponse(call: Call, resp: Response) {
                         Log.d(LOG_TAG, "Response code: " + resp.code())
-                        Log.d(LOG_TAG, "Response body: " + resp.body())
+
+                        val respBodyString = resp.body()?.string()
+
+                        Log.d(LOG_TAG, "Response body: " + respBodyString)
                         val handler = Handler(Looper.getMainLooper())
                         handler.post {
-                            try {
 
-                                val mhandler = Handler(Looper.getMainLooper())
-                                if (resp.code() != 200) {
-                                    mhandler.post { Toast.makeText(applicationContext, "Login failed, pleas try again", Toast.LENGTH_SHORT).show() }
-                                } else {
+                            val mhandler = Handler(Looper.getMainLooper())
+                            if (resp.code() != 200) {
+                                mhandler.post { Toast.makeText(applicationContext, "Login failed, pleas try again", Toast.LENGTH_SHORT).show() }
+                            } else {
 
-                                    val respBodyString = resp.body()?.string()
-                                    Log.d(LOG_TAG, "Response body String : $respBodyString")
-                                    val response = JSONObject(respBodyString)
-                                    val token = response.getString("token")
-                                    Token.set(token)
-                                    Log.d(LOG_TAG, response.get("token").toString())
-                                    mhandler.post {
-                                        Toast.makeText(applicationContext, "Success login", Toast.LENGTH_SHORT).show()
-                                        val intent = Intent(applicationContext, MainActivity::class.java)
-                                        startActivity(intent)
-                                    }
+                                Log.d(LOG_TAG, "Response body String : $respBodyString")
+                                val response = JSON.parseObject(respBodyString)
+                                val token = response.getString("token")
+                                Token.set(token)
+                                Log.d(LOG_TAG, "Got token" + token)
+                                mhandler.post {
+                                    Toast.makeText(applicationContext, "Success login", Toast.LENGTH_SHORT).show()
+                                    val intent = Intent(applicationContext, MainActivity::class.java)
+                                    startActivity(intent)
                                 }
-
-                            } catch (e: Exception) {
-                                Log.d(LOG_TAG, e.message)
-                                e.printStackTrace()
                             }
                         }
                     }

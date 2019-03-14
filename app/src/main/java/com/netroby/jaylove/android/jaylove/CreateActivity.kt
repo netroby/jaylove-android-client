@@ -49,6 +49,7 @@ class CreateActivity : AppCompatActivity() {
         setContentView(R.layout.activity_create)
         //Check if token exists
         LocalStorage.registerContext(applicationContext)
+
         val securityToken = Token.get()
         if (securityToken == "") {
             startActivity(Intent(this@CreateActivity, LoginActivity::class.java))
@@ -170,7 +171,7 @@ class CreateActivity : AppCompatActivity() {
         sendBtn.isEnabled = false
         val contentEditText = findViewById<EditText>(R.id.editText)
         val content = contentEditText.text.toString()
-        val loginURL = ApiBase.getSaveBlogAddUrl(token)
+        val targetURL = ApiBase.getSaveBlogAddUrl(token)
         val paramsMap = HashMap<String, String>()
         paramsMap["content"] = content.replace("\r?\n".toRegex(), "<br />")
         val list = ArrayList<String>()
@@ -182,7 +183,7 @@ class CreateActivity : AppCompatActivity() {
 
         Log.i(LOG_TAG, "The post content preview: " + jParams.toString())
         try {
-            DLHttpClient.doPost(loginURL, jParams.toString(), object : Callback {
+            DLHttpClient.doPost(targetURL, jParams.toString(), object : Callback {
                 override fun onFailure(call: Call, e: IOException) {
                     sendBtn.setText(R.string.create_submit)
                     sendBtn.isEnabled = true
