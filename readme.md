@@ -3,6 +3,18 @@
 This is a client app for android platform. Day love is a small personal security notes software.
 Now you can download android app. fast and amazing using jaylove app to write anything down.
 
+
+
+## Join us
+
+Matrix chat 
+
+![https://matrix.to/#/+yskm:matrix.org](https://yskm.dev/matrix.png)
+
+[https://matrix.to/#/+yskm:matrix.org](https://matrix.to/#/+yskm:matrix.org)
+
+
+
 ## what is jaylove
 
 https://github.com/netroby/jaylove
