@@ -1,5 +1,10 @@
 # jaylove Android client
 
+
+Buy me a cup of coffee for $3
+
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/M4M54KKIF)
+
 This is a client app for android platform. Day love is a small personal security notes software.
 Now you can download android app. fast and amazing using jaylove app to write anything down.
 
