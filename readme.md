@@ -10,13 +10,6 @@ Now you can download android app. fast and amazing using jaylove app to write an
 
 
 
-## Join us
-
-Matrix chat 
-
-![https://matrix.to/#/+yskm:matrix.org](https://yskm.dev/matrix.png)
-
-[https://matrix.to/#/+yskm:matrix.org](https://matrix.to/#/+yskm:matrix.org)
 
 
 
